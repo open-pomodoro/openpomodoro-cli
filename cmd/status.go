@@ -16,12 +16,12 @@ func init() {
 }
 
 func statusCmd(cmd *cobra.Command, args []string) error {
-	p, err := client.Current()
+	s, err := client.CurrentState()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(format.Format(p, formatFlag))
+	fmt.Println(format.Format(s, formatFlag))
 
 	return nil
 }

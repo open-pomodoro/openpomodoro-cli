@@ -18,17 +18,31 @@ var RootCmd = &cobra.Command{
 }
 
 var (
-	client *openpomodoro.Client
+	client   *openpomodoro.Client
+	settings *openpomodoro.Settings
 
 	directoryFlag string
 	formatFlag    string
 )
 
 func init() {
+	c, err := openpomodoro.NewClient(directoryFlag)
+	if err != nil {
+		panic(err)
+	}
+
+	client = c
+
+	s, err := client.Settings()
+	if err != nil {
+		panic(err)
+	}
+
+	settings = s
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVarP(
-		&directoryFlag, "directory", "d", ``,
+		&directoryFlag, "directory", "", ``,
 		"directory to read/write Open Pomodoro data (default is ~/.pomodoro/)")
 
 	RootCmd.PersistentFlags().StringVarP(
@@ -38,13 +52,6 @@ func init() {
 
 func initConfig() {
 	viper.AutomaticEnv()
-
-	c, err := openpomodoro.NewClient(directoryFlag)
-	if err != nil {
-		panic(err)
-	}
-
-	client = c
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
