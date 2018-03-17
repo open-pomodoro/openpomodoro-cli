@@ -9,6 +9,7 @@ import (
 )
 
 var durationFlag int
+var tagsFlag []string
 
 func init() {
 	command := &cobra.Command{
@@ -22,6 +23,9 @@ func init() {
 		int(settings.DefaultPomodoroDuration.Minutes()),
 		"duration for this Pomodoro")
 
+	command.Flags().StringArrayVarP(
+		&tagsFlag, "tags", "t", []string{},
+		"tags for this Pomodoro")
 
 	RootCmd.AddCommand(command)
 }
@@ -32,6 +36,7 @@ func startCmd(cmd *cobra.Command, args []string) error {
 	p := openpomodoro.NewPomodoro()
 	p.Description = description
 	p.Duration = time.Duration(durationFlag) * time.Minute
+	p.Tags = tagsFlag
 
 	err := client.Start(p)
 	if err != nil {
