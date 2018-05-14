@@ -14,6 +14,10 @@
 $ pomodoro start
 25:00 🍅
 
+# Start a Pomodoro in the past
+$ pomodoro start --ago 10m
+15:00 🍅
+
 # Set the Pomodoro duration in minutes
 $ pomodoro start 30
 30:00 🍅

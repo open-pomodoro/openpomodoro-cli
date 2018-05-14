@@ -8,8 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var durationFlag int
-var tagsFlag []string
+var (
+	agoFlag      time.Duration
+	durationFlag int
+	tagsFlag     []string
+)
 
 func init() {
 	command := &cobra.Command{
@@ -17,6 +20,10 @@ func init() {
 		Short: "Start a new Pomodoro",
 		RunE:  startCmd,
 	}
+
+	command.Flags().DurationVarP(
+		&agoFlag, "ago", "a", 0,
+		"time ago this Pomodoro started")
 
 	command.Flags().IntVarP(
 		&durationFlag, "duration", "d",
@@ -36,6 +43,7 @@ func startCmd(cmd *cobra.Command, args []string) error {
 	p := openpomodoro.NewPomodoro()
 	p.Description = description
 	p.Duration = time.Duration(durationFlag) * time.Minute
+	p.StartTime = time.Now().Add(-agoFlag)
 	p.Tags = tagsFlag
 
 	err := client.Start(p)
