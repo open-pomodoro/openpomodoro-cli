@@ -27,7 +27,7 @@ $ pomodoro start 22m30s
 22:30 🍅
 
 # Provide a description and tags
-$ pomodoro start -d "Writing a blog post" -t writing,personal
+$ pomodoro start "Blog post" -t writing,personal
 25:00 🍅
 Writing a blog post
 writing,personal
@@ -47,6 +47,8 @@ $ pomodoro status
 $ pomodoro status -f "%mr %c/%g 🍅"
 12 🍅 2/8
 ```
+
+See [](#status-format) below for documentation on the status format string.
 
 ### Clear a finished Pomodoro
 
@@ -77,11 +79,6 @@ $ pomodoro status
 ❗️🍅
 ```
 
-### Check your daily goal progress
-
-```
-$ pomodoro goal
-2/8
 ```
 
 ## Status Format
