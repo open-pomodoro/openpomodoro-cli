@@ -79,6 +79,30 @@ $ pomodoro status
 ❗️🍅
 ```
 
+### Show Pomodoro history
+
+```
+$ pomodoro history
+2015-06-14T12:34:00-04:00 description="Blog post" duration=25 tags=writing,personal
+
+# Output in JSON format
+$ pomodoro history --output json
+{
+  "pomodoros": [
+    {
+      "start_time": "2015-06-14T12:34:56-04:00",
+      "description": "Blog Post",
+      "duration": 25,
+      "tags": [
+        "writing",
+        "personal"
+      ]
+    }
+  ]
+}
+
+# Output in iCal format
+$ pomodoro history --output ical > ~/Pomodoros.ics
 ```
 
 ## Status Format
