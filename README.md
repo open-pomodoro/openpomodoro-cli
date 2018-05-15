@@ -31,6 +31,12 @@ $ pomodoro start "Blog post" -t writing,personal
 25:00 🍅
 Writing a blog post
 writing,personal
+
+# Repeat the last Pomodoro
+$ pomodoro repeat
+25:00 🍅
+Writing a blog post
+writing,personal
 ```
 
 ### Check the status of the current Pomodoro
