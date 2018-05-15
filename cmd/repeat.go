@@ -14,6 +14,10 @@ func init() {
 		RunE:  repeatCmd,
 	}
 
+	command.Flags().DurationVarP(
+		&agoFlag, "ago", "a", 0,
+		"time ago this Pomodoro started")
+
 	RootCmd.AddCommand(command)
 }
 
@@ -28,8 +32,7 @@ func repeatCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("Cannot repeat an active Pomodoro")
 	}
 
-	// Clear the start time
-	p.StartTime = time.Time{}
+	p.StartTime = time.Now().Add(-agoFlag)
 
 	err = client.Start(p)
 	if err != nil {
