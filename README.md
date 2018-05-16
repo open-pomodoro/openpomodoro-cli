@@ -19,11 +19,11 @@ $ pomodoro start --ago 10m
 15:00 🍅
 
 # Set the Pomodoro duration in minutes
-$ pomodoro start 30
+$ pomodoro start --duration 30
 30:00 🍅
 
 # Set the Pomodoro duration in seconds
-$ pomodoro start 22m30s
+$ pomodoro start --duration 22m30s
 22:30 🍅
 
 # Provide a description and tags
