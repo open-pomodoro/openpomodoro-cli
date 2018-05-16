@@ -4,7 +4,21 @@
 
 ## Installation
 
-`#TODO`
+1. Download the latest package for your platform from the [Releases page](https://github.com/open-pomodoro/openpomodoro-cli/releases/latest).
+2. Untar the package with `tar -zxvf openpomodoro-cli*.tar.gz`.
+3. Move the extracted `openpomodoro-cli` file to a directory in your `$PATH` (for most systems, this will be `/usr/local/bin/`).
+
+Or, if you have a [Go development environment](https://golang.org/doc/install):
+
+```
+go get github.com/open-pomodoro/openpomodoro-cli
+```
+
+Both of these methods will install the `openpomodoro-cli` command. You can then alias the command in your shell. For example, in `~/.profile`:
+
+```sh
+alias pomodoro=openpomodoro-cli
+```
 
 ## Usage
 
