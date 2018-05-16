@@ -23,6 +23,7 @@ var (
 
 	directoryFlag string
 	formatFlag    string
+	waitFlag      bool
 )
 
 func init() {
@@ -48,6 +49,10 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(
 		&formatFlag, "format", "f", format.DefaultFormat,
 		"format to display Pomodoros in")
+
+	RootCmd.PersistentFlags().BoolVarP(
+		&waitFlag, "wait", "w", false,
+		"wait for the Pomodoro to end before exiting")
 }
 
 func initConfig() {

@@ -23,5 +23,11 @@ func statusCmd(cmd *cobra.Command, args []string) error {
 
 	fmt.Println(format.Format(s, formatFlag))
 
+	if waitFlag {
+		if d := s.Pomodoro.Remaining(); d > 0 {
+			wait(d)
+		}
+	}
+
 	return nil
 }

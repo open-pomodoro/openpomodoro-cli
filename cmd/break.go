@@ -31,10 +31,18 @@ func breakCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return countdown.For(d, time.Second).Do(func(c *countdown.Countdown) error {
+	return wait(d)
+}
+
+func wait(d time.Duration) error {
+	err := countdown.For(d, time.Second).Do(func(c *countdown.Countdown) error {
 		fmt.Printf("\r%s", format.MinSec(c.Remaining()))
 		return nil
 	})
+
+	fmt.Println()
+
+	return err
 }
 
 func parseDurationMinutes(s string) (time.Duration, error) {

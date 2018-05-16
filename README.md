@@ -32,11 +32,10 @@ $ pomodoro start "Blog post" -t writing,personal
 Writing a blog post
 writing,personal
 
-# Repeat the last Pomodoro
-$ pomodoro repeat
+# Block until the Pomodoro finishes
+$ pomodoro start --wait
 25:00 🍅
-Writing a blog post
-writing,personal
+24:99
 ```
 
 ### Check the status of the current Pomodoro
@@ -52,6 +51,11 @@ $ pomodoro status
 # Customize the status format
 $ pomodoro status -f "%mr %c/%g 🍅"
 12 🍅 2/8
+
+# Block until the Pomodoro finishes
+$ pomodoro status --wait
+12:34 🍅
+12:33
 ```
 
 See [](#status-format) below for documentation on the status format string.
@@ -93,6 +97,22 @@ $ pomodoro break
 
 $ pomodoro break 15
 14:59
+```
+
+### Repeat the last Pomodoro
+
+```
+$ pomodoro repeat
+25:00 🍅
+Writing a blog post
+writing,personal
+
+# Block until the Pomodoro finishes
+$ pomodoro repeat --wait
+25:00 🍅
+Writing a blog post
+writing,personal
+24:59
 ```
 
 ### Show Pomodoro history
