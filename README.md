@@ -85,6 +85,16 @@ $ pomodoro status
 ❗️🍅
 ```
 
+### Take a break
+
+```
+$ pomodoro break
+4:59
+
+$ pomodoro break 15
+14:59
+```
+
 ### Show Pomodoro history
 
 ```
