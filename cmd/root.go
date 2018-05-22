@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/open-pomodoro/go-openpomodoro"
@@ -27,19 +28,18 @@ var (
 )
 
 func init() {
-	c, err := openpomodoro.NewClient(directoryFlag)
+	var err error
+
+	client, err = openpomodoro.NewClient(directoryFlag)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Could not create client: %v", err)
 	}
 
-	client = c
-
-	s, err := client.Settings()
+	settings, err = client.Settings()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Could not retrieve settings: %v", err)
 	}
 
-	settings = s
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVarP(
