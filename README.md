@@ -11,14 +11,10 @@
 Or, if you have a [Go development environment](https://golang.org/doc/install):
 
 ```
-go get github.com/open-pomodoro/openpomodoro-cli
+go get github.com/open-pomodoro/openpomodoro-cli/cmd/pomodoro
 ```
 
-Both of these methods will install the `openpomodoro-cli` command. You can then alias the command in your shell. For example, in `~/.profile`:
-
-```sh
-alias pomodoro=openpomodoro-cli
-```
+> If you already have another command named `pomodoro`, use `go get github.com/open-pomodoro/openpomodoro-cli` to install the `openpomodoro-cli` command.
 
 ## Usage
 
