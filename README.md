@@ -39,13 +39,28 @@ $ pomodoro start --duration 22m30s
 # Provide a description and tags
 $ pomodoro start "Blog post" -t writing,personal
 25:00 🍅
-Writing a blog post
+Blog post
 writing,personal
 
 # Block until the Pomodoro finishes
 $ pomodoro start --wait
 25:00 🍅
 24:99
+```
+
+### Amend the current Pomodoro
+
+```
+$ pomodoro start "Blog postt" --tags writing,personal
+25:00 🍅
+Blog postt
+writing,personal
+
+# Pass any options accepted by start. Only passed options will be changed.
+$ pomodoro amend "Blog post"
+24:30 🍅
+Blog post
+writing,personal
 ```
 
 ### Check the status of the current Pomodoro
