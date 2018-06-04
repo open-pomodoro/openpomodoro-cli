@@ -11,7 +11,7 @@
 Or, if you have a [Go development environment](https://golang.org/doc/install):
 
 ```
-go get github.com/open-pomodoro/openpomodoro-cli/cmd/pomodoro
+go get -u github.com/open-pomodoro/openpomodoro-cli/cmd/pomodoro
 ```
 
 > If you already have another command named `pomodoro`, use `go get github.com/open-pomodoro/openpomodoro-cli` to install the `openpomodoro-cli` command.
