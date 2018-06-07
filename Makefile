@@ -1,15 +1,37 @@
-DEMO_COMMANDS := start status end status start clear status
-DEMO_COMMANDS := start status
-TMPDIR := $(shell mktemp -d)
+NAME := pomodoro
+BINDIR := release
+BIN := $(BINDIR)/$(NAME)
 
-demo: bin/pomodoro
-	@for s in $(DEMO_COMMANDS); do \
-	  echo; \
-	  echo $$ pomodoro $$s; \
-	  pomodoro --directory $(TMPDIR) $$s; \
-	done
+GOX_OSARCH := darwin/amd64 linux/amd64
+VERSION := 0.1.0
 
-bin/pomodoro: *.go
-	go build -o $@
+LDFLAGS := "-X main.Version=$(VERSION)" 
 
-.PHONY: demo
+default: deps test build
+
+test: deps
+	go test ./...
+
+install: build
+	cp $(BIN) /usr/local/bin/$(NAME)
+
+build: $(BIN)
+
+clean:
+	rm -rf $(BINDIR)
+
+$(BIN): deps
+	go build -ldflags $(LDFLAGS) -o $@
+
+release: deps
+	gox \
+	  -ldflags $(LDFLAGS) -osarch="$(GOX_OSARCH)" \
+	  -output="release/$(NAME)_{{.OS}}_{{.Arch}}_$(VERSION)" \
+	  ./cmd/$(NAME)
+	cd release/; for f in *; do mv -v $$f $(NAME); tar -zcf $$f.tar.gz $(NAME); rm $(NAME); done
+
+deps:
+	go get -t ./...
+	go get github.com/mitchellh/gox
+
+.PHONY: all build clean default deps release test

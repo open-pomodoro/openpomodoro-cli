@@ -1,0 +1,20 @@
+language: go
+
+sudo: false
+
+go:
+  - "1.10"
+
+script:
+  - make test release
+
+deploy:
+  provider: releases
+  file: release/pomodoro*
+  file_glob: true
+  skip_cleanup: true
+  api_key:
+    secure: ZQObSk5C6MViH8yiKj89dCniBfHa0/625SAiqhU1anoiSioVcG0oAdeiH14zIlCb8Ivf8Ng831R6Jddr/nAPhFsYkpJshbcYAALgReAdguzwons2hNp9BUM07AKlx8Ed3ygECwA8ZQsaJZTV6t6lTAf6t6p0r8JHtxpRRu1ex8eItsJBwEp5KalPemk5dccxAWsJ1M/uSJFMMMS6HpP9y1MWOsHNyFQalx0f9DiW2Gmcy8wtAqfjCdZubtwxBR8gsN/bLT5t2ybBSJea/E9Qao7LGZc8WQUU77CteJkaoWsctEk7bShD9Vw0oioEy7c5ZqjWNHufA3/NEGXM5IvbsHktArQ23PYaHVh5gFyD66nCUDd6wB7MDtOtx8JJzuX7+UpvAePj5ARi0Rdn/pFz4W2rwKErWRSlgZnLNnD9Ay62Upi8XUGoeNoIP5/R7vJmfgD3DuecQmLgEnzLc4NkjV4eH4nPfn4+LRJkc6GD/cZPWj4wAM/GOFBTkVeJomEtPjJViQ1uSPDIskq0YQ0lopmXdeXuIqtzvS4pcq+JlxWPLEa6ZrOs3INT2nPJ05gMOiAhTwGvKuMYN80h80zksW3+Yq0b8ZaNl2O1Ogt2ImDgJvptJt4kEGUjKWFVIVDiy+57ksd1CaiUt/ns1FLt/bCtg56DEB2FUvIYNK3fCA8=
+  on:
+    repo: open-pomodoro/openpomodoro-cli
+    tags: true
