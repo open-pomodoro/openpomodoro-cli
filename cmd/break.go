@@ -7,6 +7,7 @@ import (
 
 	"github.com/justincampbell/go-countdown"
 	"github.com/justincampbell/go-countdown/format"
+	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +32,15 @@ func breakCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return wait(d)
+	if err := hook.Run(client, "break"); err != nil {
+		return err
+	}
+
+	if err := wait(d); err != nil {
+		return err
+	}
+
+	return hook.Run(client, "stop")
 }
 
 func wait(d time.Duration) error {
