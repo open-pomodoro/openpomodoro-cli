@@ -34,6 +34,12 @@ func repeatCmd(cmd *cobra.Command, args []string) error {
 
 	p.StartTime = time.Now().Add(-agoFlag)
 
+	s, err := client.Settings()
+	if err != nil {
+		return err
+	}
+	p.Duration = s.DefaultPomodoroDuration
+
 	err = client.Start(p)
 	if err != nil {
 		return err
