@@ -1,0 +1,9 @@
+project_name: pomodoro
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
