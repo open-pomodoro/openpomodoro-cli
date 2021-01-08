@@ -1,5 +1,9 @@
 ## Unreleased
 
+## 0.2.1
+
+* Move release process to GoReleaser and GitHub Actions.
+
 ## 0.2.0
 
 * Repeat now uses the default duration instead of the last Pomodoro.
