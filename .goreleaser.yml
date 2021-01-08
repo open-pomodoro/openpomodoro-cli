@@ -1,7 +1,6 @@
-project_name: pomodoro
-
 builds:
-  - env:
+  - binary: pomodoro
+    env:
       - CGO_ENABLED=0
     ldflags:
       - -X main.Version={{.Version}}
