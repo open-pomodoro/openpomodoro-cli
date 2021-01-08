@@ -3,6 +3,8 @@ project_name: pomodoro
 builds:
   - env:
       - CGO_ENABLED=0
+    ldflags:
+      - -X main.Version={{.Version}}
     goos:
       - darwin
       - linux
