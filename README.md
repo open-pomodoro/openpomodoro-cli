@@ -121,13 +121,13 @@ $ pomodoro cancel
 $ pomodoro status
 ```
 
-
 ### Finish a Pomodoro early (or late)
 
 ```
 $ pomodoro status
-12:34 🍅
+1:23 🍅
 $ pomodoro finish
+23:37
 $ pomodoro status
 ❗️🍅
 ```

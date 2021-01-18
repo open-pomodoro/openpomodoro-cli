@@ -45,6 +45,12 @@ func Format(s *openpomodoro.State, f string) string {
 	return result
 }
 
+// DurationAsTime returns a duration string.
+func DurationAsTime(d time.Duration) string {
+	s := round(d.Seconds())
+	return fmt.Sprintf("%d:%02d", s/60, s%60)
+}
+
 func timeRemaining(exclaim bool) Formatter {
 	return func(s *openpomodoro.State) string {
 		d := s.Pomodoro.Remaining()
@@ -57,7 +63,7 @@ func timeRemaining(exclaim bool) Formatter {
 			}
 		}
 
-		return formatDurationAsTime(d)
+		return DurationAsTime(d)
 	}
 }
 
@@ -75,7 +81,7 @@ func minutesRemaining(exclaim bool) Formatter {
 }
 
 func duration(s *openpomodoro.State) string {
-	return formatDurationAsTime(s.Pomodoro.Duration)
+	return DurationAsTime(s.Pomodoro.Duration)
 }
 
 func durationMinutes(s *openpomodoro.State) string {
@@ -109,11 +115,6 @@ func goalTotal(slash bool) Formatter {
 		}
 		return result
 	}
-}
-
-func formatDurationAsTime(d time.Duration) string {
-	s := round(d.Seconds())
-	return fmt.Sprintf("%d:%02d", s/60, s%60)
 }
 
 func defaultString(i interface{}) string {
