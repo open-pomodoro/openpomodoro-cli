@@ -28,18 +28,6 @@ var (
 )
 
 func init() {
-	var err error
-
-	client, err = openpomodoro.NewClient(directoryFlag)
-	if err != nil {
-		log.Fatalf("Could not create client: %v", err)
-	}
-
-	settings, err = client.Settings()
-	if err != nil {
-		log.Fatalf("Could not retrieve settings: %v", err)
-	}
-
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVarP(
@@ -53,6 +41,20 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(
 		&waitFlag, "wait", "w", false,
 		"wait for the Pomodoro to end before exiting")
+
+	viper.AutomaticEnv()
+
+	var err error
+
+	client, err = openpomodoro.NewClient(directoryFlag)
+	if err != nil {
+		log.Fatalf("Could not create client: %v", err)
+	}
+
+	settings, err = client.Settings()
+	if err != nil {
+		log.Fatalf("Could not retrieve settings: %v", err)
+	}
 }
 
 func initConfig() {
