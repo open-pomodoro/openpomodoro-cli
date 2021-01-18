@@ -200,6 +200,12 @@ colour1 # Red
 
 Nothing is output if no Pomodoro is active.
 
+Colors can be used within a Tmux configuration like so:
+
+```tmux
+set -g status-left '#[bg=#(pomodoro tmux-color)]🍅'
+```
+
 You can also define custom colors:
 
 ```
