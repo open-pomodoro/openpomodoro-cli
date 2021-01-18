@@ -2,6 +2,23 @@
 
 > A command-line Pomodoro tracker which uses the [Open Pomodoro Format](https://github.com/open-pomodoro/open-pomodoro-format/blob/master/README.md)
 
+## Table of Contents
+
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Start a Pomodoro](#start-a-pomodoro)
+  * [Amend the current Pomodoro](#amend-the-current-pomodoro)
+  * [Check the status of the current Pomodoro](#check-the-status-of-the-current-pomodoro)
+  * [Clear a finished Pomodoro](#clear-a-finished-pomodoro)
+  * [Cancel an active Pomodoro](#cancel-an-active-pomodoro)
+  * [Finish a Pomodoro early (or late)](#finish-a-pomodoro-early-or-late)
+  * [Take a break](#take-a-break)
+  * [Repeat the last Pomodoro](#repeat-the-last-pomodoro)
+  * [Show Pomodoro history](#show-pomodoro-history)
+* [Status Format](#status-format)
+  * [Available Parts](#available-parts)
+* [Hooks](#hooks)
+
 ## Installation
 
 1. Download the latest package for your platform from the [Releases page](https://github.com/open-pomodoro/openpomodoro-cli/releases/latest).
