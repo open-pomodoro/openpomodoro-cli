@@ -15,6 +15,7 @@
   * [Take a break](#take-a-break)
   * [Repeat the last Pomodoro](#repeat-the-last-pomodoro)
   * [Show Pomodoro history](#show-pomodoro-history)
+  * [Tmux Color](#tmux-color)
 * [Status Format](#status-format)
   * [Available Parts](#available-parts)
 * [Hooks](#hooks)
@@ -181,6 +182,34 @@ $ pomodoro history --output json
 
 # Output in iCal format
 $ pomodoro history --output ical > ~/Pomodoros.ics
+```
+
+### Tmux Color
+
+`tmux-color` returns a color for the current Pomodoro status.
+
+```
+# Active Pomodoro
+$ pomodoro tmux-color
+colour2 # Green
+
+# Finished Pomodoro
+$ pomodoro tmux-color
+colour1 # Red
+```
+
+Nothing is output if no Pomodoro is active.
+
+You can also define custom colors:
+
+```
+# Active Pomodoro
+$ pomodoro tmux-color --active colour166 --done colour165
+colour166 # Orange
+
+# Finished Pomodoro
+$ pomodoro tmux-color --active colour166 --done colour165
+colour165 # Purple
 ```
 
 ## Status Format
