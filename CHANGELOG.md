@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 0.3.0
+
+* `start`, `stop`, and `break` hooks are now supported.
+* tmux-color now accepts custom color flags.
+* Fix issue where `--directory` flag did not work properly.
+
 ## 0.2.1
 
 * Move release process to GoReleaser and GitHub Actions.
