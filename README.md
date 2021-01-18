@@ -206,3 +206,32 @@ Writing a blog post
 %c  - Completed Pomodoros today
 %l  - Pomodoros remaining (left) to reach goal
 ```
+## Hooks
+
+Hooks can be run when Pomodoros change state. There are 3 possible hooks:
+
+* `break`
+* `start`
+* `stop`
+
+Commands which run hooks:
+
+* `break`: `break` immediately, `stop` when break is over
+* `cancel`: `stop`
+* `clear`: `stop`
+* `finish`: `stop`
+* `repeat`: `start`
+* `start`: `start`
+
+To enable a hook, create an executable file in the `hooks` subdirectory within your configuration directory. For example:
+
+```sh
+#!/usr/bin/env bash
+set -exo pipefail
+
+say "Pomodoro started"
+```
+
+```shellsession
+$ chmod +x ~/.pomodoro/hooks/start
+```

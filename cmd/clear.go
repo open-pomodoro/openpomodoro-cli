@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
 
@@ -15,5 +16,9 @@ func init() {
 }
 
 func clearCmd(cmd *cobra.Command, args []string) error {
+	if err := hook.Run(client, "stop"); err != nil {
+		return err
+	}
+
 	return client.Clear()
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
 
@@ -42,6 +43,10 @@ func repeatCmd(cmd *cobra.Command, args []string) error {
 
 	err = client.Start(p)
 	if err != nil {
+		return err
+	}
+
+	if err := hook.Run(client, "start"); err != nil {
 		return err
 	}
 

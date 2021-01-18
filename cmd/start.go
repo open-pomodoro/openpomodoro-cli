@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/open-pomodoro/go-openpomodoro"
+	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
 
@@ -46,8 +47,11 @@ func startCmd(cmd *cobra.Command, args []string) error {
 	p.StartTime = time.Now().Add(-agoFlag)
 	p.Tags = tagsFlag
 
-	err := client.Start(p)
-	if err != nil {
+	if err := client.Start(p); err != nil {
+		return err
+	}
+
+	if err := hook.Run(client, "start"); err != nil {
 		return err
 	}
 
