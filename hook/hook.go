@@ -18,9 +18,11 @@ func Run(client *openpomodoro.Client, name string) error {
 	}
 
 	cmd := exec.Command(filename)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()
-	if output, err := cmd.Output(); err != nil {
-		fmt.Printf("Hook %q failed:\n%s\n\n", name, output)
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Hook %q failed:\n\n", name)
 		return err
 	}
 
