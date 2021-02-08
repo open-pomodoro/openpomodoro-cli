@@ -1,6 +1,7 @@
 ## Unreleased
 
 * `finish` prints the final duration.
+* Passthrough stderr from hooks.
 
 ## 0.3.0
 
