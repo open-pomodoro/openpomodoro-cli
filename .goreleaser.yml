@@ -1,9 +1,10 @@
 builds:
-  - binary: pomodoro
+  - main: ./cmd/pomodoro
+    binary: pomodoro
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -X main.Version={{.Version}}
+      - -X github.com/open-pomodoro/openpomodoro-cli/cmd.Tag={{.Tag}}
     goos:
       - darwin
       - linux

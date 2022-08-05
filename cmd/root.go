@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
 
 	"github.com/open-pomodoro/go-openpomodoro"
 	"github.com/open-pomodoro/openpomodoro-cli/format"
@@ -25,9 +26,15 @@ var (
 	directoryFlag string
 	formatFlag    string
 	waitFlag      bool
+
+	// Tag is the git tag of the current build. It is set by LDFLAGS during the
+	// build process.
+	Tag string
 )
 
 func init() {
+	RootCmd.Version = version()
+
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVarP(
@@ -59,6 +66,43 @@ func init() {
 
 func initConfig() {
 	viper.AutomaticEnv()
+}
+
+func version() string {
+	if Tag == "" {
+		Tag = "development"
+	}
+
+	build, ok := debug.ReadBuildInfo()
+	if !ok {
+		return fmt.Sprintf("%s (unknown)", Tag)
+	}
+
+	var gitSha string
+	var dirty bool
+
+	for _, v := range build.Settings {
+		if v.Key == "vcs.revision" {
+			gitSha = v.Value
+			if len(gitSha) > 7 {
+				gitSha = gitSha[:7]
+			}
+		}
+
+		if v.Key == "vcs.modified" {
+			dirty = v.Value == "true"
+		}
+	}
+
+	if gitSha == "" {
+		gitSha = "unknown"
+	}
+
+	if dirty {
+		gitSha += "+"
+	}
+
+	return fmt.Sprintf("%s (%s)", Tag, gitSha)
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
