@@ -1,4 +1,4 @@
-module github.com/open-pomodoro/openpomodoro-cli
+module github.com/hugobally/openpomodoro-cli
 
 go 1.16
 
