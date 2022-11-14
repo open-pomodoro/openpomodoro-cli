@@ -11,21 +11,34 @@ import (
 	"github.com/spf13/viper"
 )
 
-// RootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
-	Use:   "pomodoro",
-	Short: "Pomodoro CLI",
-	Long:  "A simple Pomodoro command-line client for the Open Pomodoro format",
-}
-
 var (
 	client   *openpomodoro.Client
-	settings *openpomodoro.Settings
+	settings = &openpomodoro.DefaultSettings
 
 	directoryFlag string
 	formatFlag    string
 	waitFlag      bool
 )
+
+// RootCmd represents the base command when called without any subcommands
+var RootCmd = &cobra.Command{
+	Use:   "pomodoro",
+	Short: "Pomodoro CLI",
+	Long:  "A simple Pomodoro command-line client for the Open Pomodoro format",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		var err error
+
+		client, err = openpomodoro.NewClient(directoryFlag)
+		if err != nil {
+			log.Fatalf("Could not create client: %v", err)
+		}
+
+		settings, err = client.Settings()
+		if err != nil {
+			log.Fatalf("Could not retrieve settings: %v", err)
+		}
+	},
+}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -43,18 +56,6 @@ func init() {
 		"wait for the Pomodoro to end before exiting")
 
 	viper.AutomaticEnv()
-
-	var err error
-
-	client, err = openpomodoro.NewClient(directoryFlag)
-	if err != nil {
-		log.Fatalf("Could not create client: %v", err)
-	}
-
-	settings, err = client.Settings()
-	if err != nil {
-		log.Fatalf("Could not retrieve settings: %v", err)
-	}
 }
 
 func initConfig() {
