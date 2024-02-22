@@ -256,7 +256,6 @@ Writing a blog post
 %g  - Daily Pomodoro goal
 %!g  - Daily Pomodoro goal, with a preceding slash
 %c  - Completed Pomodoros today
-%l  - Pomodoros remaining (left) to reach goal
 ```
 ## Hooks
 
