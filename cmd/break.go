@@ -22,8 +22,19 @@ func init() {
 }
 
 func breakCmd(cmd *cobra.Command, args []string) error {
-	d := settings.DefaultBreakDuration
+	p, err := client.Pomodoro()
+	if err != nil {
+		return err
+	}
 
+	if p.IsActive() {
+		err := finishCmd(cmd, args)
+		if err != nil {
+			return err
+		}
+	}
+
+	d := settings.DefaultBreakDuration
 	if len(args) > 0 {
 		var err error
 		d, err = parseDurationMinutes(args[0])
