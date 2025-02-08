@@ -55,5 +55,13 @@ func startCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return statusCmd(cmd, args)
+	if err := statusCmd(cmd, args); err != nil {
+		return err
+	}
+
+	if waitFlag {
+		return hook.Run(client, "stop")
+	}
+
+	return nil
 }
