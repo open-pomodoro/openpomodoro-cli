@@ -267,12 +267,12 @@ Hooks can be run when Pomodoros change state. There are 3 possible hooks:
 
 Commands which run hooks:
 
-* `break`: `break` immediately, `stop` when break is over
+* `break`: `break` immediately, `stop` when break is over, passing `break` as an argument.
 * `cancel`: `stop`
 * `clear`: `stop`
 * `finish`: `stop`
 * `repeat`: `start`
-* `start`: `start`
+* `start`: `start` immediately, `stop` when focus is over, passing `focus` as an argument.
 
 To enable a hook, create an executable file in the `hooks` subdirectory within your configuration directory. For example:
 
