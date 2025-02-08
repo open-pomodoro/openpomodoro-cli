@@ -10,14 +10,14 @@ import (
 )
 
 // Run runs a hook with the given name.
-func Run(client *openpomodoro.Client, name string) error {
+func Run(client *openpomodoro.Client, name string, args ...string) error {
 	filename := path.Join(client.Directory, "hooks", name)
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return nil
 	}
 
-	cmd := exec.Command(filename)
+	cmd := exec.Command(filename, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()

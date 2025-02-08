@@ -60,7 +60,7 @@ func startCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if waitFlag {
-		return hook.Run(client, "stop")
+		return hook.Run(client, "stop", "focus")
 	}
 
 	return nil

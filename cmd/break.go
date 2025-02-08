@@ -40,7 +40,7 @@ func breakCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return hook.Run(client, "stop")
+	return hook.Run(client, "stop", "break")
 }
 
 func wait(d time.Duration) error {
