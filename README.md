@@ -19,6 +19,7 @@
 * [Status Format](#status-format)
   * [Available Parts](#available-parts)
 * [Hooks](#hooks)
+* [Settings](#settings)
 
 ## Installation
 
@@ -286,3 +287,38 @@ say "Pomodoro started"
 ```shellsession
 $ chmod +x ~/.pomodoro/hooks/start
 ```
+
+## Settings
+
+The Pomodoro CLI can be configured using a `settings` file in your configuration directory (`~/.pomodoro/settings`). The settings file uses the logfmt format.
+
+### Available Settings
+
+* `daily_goal` - The number of Pomodoros you want to complete each day (integer, default: 0 = no goal)
+* `default_pomodoro_duration` - Default duration for work sessions (duration string, default: "25m")
+* `default_break_duration` - Default duration for breaks (duration string, default: "5m")
+* `default_tags` - Default tags to apply to new Pomodoros (comma-separated strings, default: none)
+
+### Example Settings File
+
+Create or edit `~/.pomodoro/settings`:
+
+```
+daily_goal=8 default_pomodoro_duration=25m default_break_duration=5m default_tags=work,focus
+```
+
+### Duration Format
+
+Duration values can be specified in the following formats:
+* Minutes: `25m`, `30m`
+* Seconds: `90s`, `1500s`
+* Mixed: `25m30s`, `1h30m`
+
+### Using Settings
+
+Settings are automatically applied when:
+* Starting a new Pomodoro (`pomodoro start`)
+* Taking a break (`pomodoro break`)
+* Displaying daily progress in status format (`%c/%g`)
+
+The daily goal setting is used by the status format parts `%g` (goal) and `%c` (completed today) to show progress toward your daily target.
