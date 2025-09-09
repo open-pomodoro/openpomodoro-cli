@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -51,7 +52,10 @@ func startCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "start"); err != nil {
+	env := map[string]string{
+		"POMODORO_DURATION": strconv.Itoa(durationFlag),
+	}
+	if err := hook.RunWithEnv(client, "start", env); err != nil {
 		return err
 	}
 

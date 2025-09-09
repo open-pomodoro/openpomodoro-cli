@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/open-pomodoro/openpomodoro-cli/hook"
@@ -46,7 +47,10 @@ func repeatCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "start"); err != nil {
+	env := map[string]string{
+		"POMODORO_DURATION": strconv.Itoa(int(p.Duration.Minutes())),
+	}
+	if err := hook.RunWithEnv(client, "start", env); err != nil {
 		return err
 	}
 
