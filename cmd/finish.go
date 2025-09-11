@@ -40,13 +40,15 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if breakFlag != "" {
+	if cmd.Flags().Changed("break") {
 		breakDuration := settings.DefaultBreakDuration
 
-		var err error
-		breakDuration, err = parseDurationMinutes(breakFlag)
-		if err != nil {
-			return err
+		if breakFlag != "" {
+			var err error
+			breakDuration, err = parseDurationMinutes(breakFlag)
+			if err != nil {
+				return err
+			}
 		}
 
 		if err := hook.Run(client, "break"); err != nil {
