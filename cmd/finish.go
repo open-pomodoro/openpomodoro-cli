@@ -2,11 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
-	"github.com/justincampbell/go-countdown"
-	countdownFormat "github.com/justincampbell/go-countdown/format"
 	"github.com/open-pomodoro/openpomodoro-cli/format"
 	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
@@ -48,7 +45,7 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 
 		if breakFlag != "" {
 			var err error
-			breakDuration, err = finishParseDurationMinutes(breakFlag)
+			breakDuration, err = parseDurationMinutes(breakFlag)
 			if err != nil {
 				return err
 			}
@@ -58,7 +55,7 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		if err := finishWait(breakDuration); err != nil {
+		if err := wait(breakDuration); err != nil {
 			return err
 		}
 
@@ -66,22 +63,4 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func finishWait(d time.Duration) error {
-	err := countdown.For(d, time.Second).Do(func(c *countdown.Countdown) error {
-		fmt.Printf("\r%s", countdownFormat.MinSec(c.Remaining()))
-		return nil
-	})
-
-	fmt.Println()
-
-	return err
-}
-
-func finishParseDurationMinutes(s string) (time.Duration, error) {
-	if _, err := strconv.Atoi(s); err == nil {
-		s = fmt.Sprintf("%sm", s)
-	}
-	return time.ParseDuration(s)
 }
