@@ -14,6 +14,7 @@ import (
 
 var (
 	outputFlag string
+	limitFlag  int
 )
 
 type outputFunc func(*openpomodoro.History, io.Writer) error
@@ -31,6 +32,12 @@ func init() {
 		"output format (history, ical, or json)",
 	)
 
+	command.Flags().IntVarP(
+		&limitFlag, "limit", "l",
+		0,
+		"limit the number of entries returned (0 means no limit)",
+	)
+
 	RootCmd.AddCommand(command)
 }
 
@@ -38,6 +45,15 @@ func historyCmd(cmd *cobra.Command, args []string) error {
 	h, err := client.History()
 	if err != nil {
 		return err
+	}
+
+	// Apply limit if specified
+	if limitFlag > 0 && len(h.Pomodoros) > limitFlag {
+		// Get the last N entries
+		start := len(h.Pomodoros) - limitFlag
+		h = &openpomodoro.History{
+			Pomodoros: h.Pomodoros[start:],
+		}
 	}
 
 	var f outputFunc
