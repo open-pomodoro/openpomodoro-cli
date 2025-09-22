@@ -42,3 +42,32 @@ assert_file_empty() {
         return 1
     }
 }
+
+create_hook() {
+    local hook_name="$1"
+    local hook_content="$2"
+
+    mkdir -p "$TEST_DIR/hooks"
+    cat > "$TEST_DIR/hooks/$hook_name" << EOF
+#!/bin/bash
+$hook_content
+EOF
+    chmod +x "$TEST_DIR/hooks/$hook_name"
+}
+
+assert_hook_executed() {
+    [ -f "$TEST_DIR/hook_log" ] || {
+        echo "Hook log file not found"
+        return 1
+    }
+}
+
+assert_hook_contains() {
+    assert_hook_executed
+    grep -q "$1" "$TEST_DIR/hook_log" || {
+        echo "Hook log does not contain: $1"
+        echo "Hook log contents:"
+        cat "$TEST_DIR/hook_log"
+        return 1
+    }
+}
