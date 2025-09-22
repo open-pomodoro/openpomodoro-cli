@@ -33,7 +33,7 @@ func init() {
 	)
 
 	command.Flags().IntVarP(
-		&limitFlag, "limit", "l",
+		&limitFlag, "limit", "n",
 		0,
 		"limit the number of entries returned (0 means no limit)",
 	)
