@@ -27,8 +27,7 @@ func init() {
 		"time ago this Pomodoro started")
 
 	command.Flags().IntVarP(
-		&durationFlag, "duration", "d",
-		int(settings.DefaultPomodoroDuration.Minutes()),
+		&durationFlag, "duration", "d", 25,
 		"duration for this Pomodoro")
 
 	command.Flags().StringArrayVarP(
