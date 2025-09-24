@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/open-pomodoro/openpomodoro-cli/format"
@@ -18,7 +19,8 @@ func init() {
 		RunE:  finishCmd,
 	}
 
-	command.Flags().StringVar(&breakFlag, "break", "", "take a break after finishing (duration in minutes)")
+	command.Flags().StringVarP(&breakFlag, "break", "b", "", "take a break after finishing (duration in minutes)")
+	command.Flags().Lookup("break").NoOptDefVal = " "
 
 	RootCmd.AddCommand(command)
 }
@@ -43,9 +45,10 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("break") {
 		breakDuration := settings.DefaultBreakDuration
 
-		if breakFlag != "" {
+		trimmedFlag := strings.TrimSpace(breakFlag)
+		if trimmedFlag != "" {
 			var err error
-			breakDuration, err = parseDurationMinutes(breakFlag)
+			breakDuration, err = parseDurationMinutes(trimmedFlag)
 			if err != nil {
 				return err
 			}

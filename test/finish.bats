@@ -43,3 +43,19 @@ load test_helper
     [ "$status" -eq 0 ]
     assert_file_empty "current"
 }
+
+@test "finish --break flag is accepted" {
+    create_hook "break" 'exit 1'
+
+    pomodoro start "Task" --ago 1m
+    run pomodoro finish --break
+    [ "$status" -ne 0 ]
+}
+
+@test "finish --break with custom duration is accepted" {
+    create_hook "break" 'exit 1'
+
+    pomodoro start "Task" --ago 1m
+    run pomodoro finish --break 5
+    [ "$status" -ne 0 ]
+}
