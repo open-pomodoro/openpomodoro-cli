@@ -1,10 +1,16 @@
 BATS_VERSION := v1.11.0
 BATS_DIR := .bats
 BATS := $(BATS_DIR)/bin/bats
+BINARY := pomodoro
+
+GO_SOURCES := $(shell find . -name '*.go' -not -path './vendor/*')
 
 .PHONY: test
-test: $(BATS)
+test: $(BINARY) $(BATS)
 	$(BATS) test/
+
+$(BINARY): $(GO_SOURCES) go.mod go.sum
+	go build -o $(BINARY) .
 
 $(BATS):
 	@mkdir -p $(BATS_DIR)
@@ -14,4 +20,4 @@ $(BATS):
 
 .PHONY: clean
 clean:
-	rm -rf $(BATS_DIR)
+	rm -rf $(BATS_DIR) $(BINARY)

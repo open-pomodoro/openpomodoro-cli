@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export POMODORO_BIN="${BATS_TEST_DIRNAME}/../main.go"
+export POMODORO_BIN="${BATS_TEST_DIRNAME}/../pomodoro"
 
 setup() {
     export TEST_DIR="$(mktemp -d)"
@@ -11,7 +11,7 @@ teardown() {
 }
 
 pomodoro() {
-    go run "$POMODORO_BIN" --directory "$TEST_DIR" "$@"
+    "$POMODORO_BIN" --directory "$TEST_DIR" "$@"
 }
 
 assert_file_exists() {
