@@ -39,7 +39,7 @@ load test_helper
 
 @test "--directory flag uses settings from specified directory" {
     ALT_DIR="$(mktemp -d)"
-    create_settings "$ALT_DIR/settings" "default_pomodoro_duration=60"
+    create_settings_in "$ALT_DIR/settings" "default_pomodoro_duration=60"
 
     run "$POMODORO_BIN" --directory "$ALT_DIR" start "Task in alt dir"
     [ "$status" -eq 0 ]
