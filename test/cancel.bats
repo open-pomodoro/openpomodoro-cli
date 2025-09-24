@@ -2,14 +2,7 @@
 
 load test_helper
 
-@test "cancel empties current file" {
-    pomodoro start "Work session"
-    run pomodoro cancel
-    [ "$status" -eq 0 ]
-    assert_file_empty "current"
-}
-
-@test "cancel removes current pomodoro from history" {
+@test "cancel empties current file and removes from history" {
     pomodoro start "Task to cancel"
     run pomodoro cancel
     [ "$status" -eq 0 ]

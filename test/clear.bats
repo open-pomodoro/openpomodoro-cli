@@ -2,14 +2,7 @@
 
 load test_helper
 
-@test "clear empties current file" {
-    pomodoro start "Work session"
-    run pomodoro clear
-    [ "$status" -eq 0 ]
-    assert_file_empty "current"
-}
-
-@test "clear does not affect history" {
+@test "clear empties current file and does not affect history" {
     pomodoro start "First task" --ago 5m
     pomodoro finish
     pomodoro start "Second task"

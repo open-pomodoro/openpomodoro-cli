@@ -11,15 +11,6 @@ load test_helper
     assert_file_contains "history" "Work session"
 }
 
-@test "finish preserves pomodoro description in history" {
-    pomodoro start "Important task"
-    run pomodoro finish
-    [ "$status" -eq 0 ]
-
-    assert_file_contains "history" 'description="Important task"'
-}
-
-
 @test "finish records actual elapsed time in history" {
     pomodoro start "Work session" -d 30 --ago 10m
     run pomodoro finish
