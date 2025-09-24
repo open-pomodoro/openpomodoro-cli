@@ -27,7 +27,7 @@ func init() {
 		"time ago this Pomodoro started")
 
 	command.Flags().IntVarP(
-		&durationFlag, "duration", "d", 25,
+		&durationFlag, "duration", "d", 0,
 		"duration for this Pomodoro")
 
 	command.Flags().StringArrayVarP(
@@ -42,7 +42,11 @@ func startCmd(cmd *cobra.Command, args []string) error {
 
 	p := openpomodoro.NewPomodoro()
 	p.Description = description
-	p.Duration = time.Duration(durationFlag) * time.Minute
+	if durationFlag == 0 {
+		p.Duration = settings.DefaultPomodoroDuration
+	} else {
+		p.Duration = time.Duration(durationFlag) * time.Minute
+	}
 	p.StartTime = time.Now().Add(-agoFlag)
 	p.Tags = tagsFlag
 
