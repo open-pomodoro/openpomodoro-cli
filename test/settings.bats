@@ -3,7 +3,7 @@
 load test_helper
 
 @test "start uses default pomodoro duration from settings" {
-    echo "default_pomodoro_duration=45" > "$TEST_DIR/settings"
+    create_settings "default_pomodoro_duration=45"
     pomodoro start "Task with custom default"
     assert_file_contains "current" "duration=45"
 }
@@ -14,13 +14,13 @@ load test_helper
 }
 
 @test "start explicit duration overrides settings default" {
-    echo "default_pomodoro_duration=45" > "$TEST_DIR/settings"
+    create_settings "default_pomodoro_duration=45"
     pomodoro start "Task" -d 30
     assert_file_contains "current" "duration=30"
 }
 
 @test "repeat uses default pomodoro duration from settings" {
-    echo "default_pomodoro_duration=50" > "$TEST_DIR/settings"
+    create_settings "default_pomodoro_duration=50"
     pomodoro start "Original task" --ago 5m
     pomodoro finish
     run pomodoro repeat
@@ -29,7 +29,7 @@ load test_helper
 }
 
 @test "break uses default break duration from settings" {
-    echo "default_break_duration=10" > "$TEST_DIR/settings"
+    create_settings "default_break_duration=10"
     create_hook "break" 'echo "BREAK_HOOK_RAN" >> "$TEST_DIR/hook_log"; exit 1'
 
     run pomodoro break
@@ -39,7 +39,7 @@ load test_helper
 
 @test "--directory flag uses settings from specified directory" {
     ALT_DIR="$(mktemp -d)"
-    echo "default_pomodoro_duration=60" > "$ALT_DIR/settings"
+    create_settings "$ALT_DIR/settings" "default_pomodoro_duration=60"
 
     run "$POMODORO_BIN" --directory "$ALT_DIR" start "Task in alt dir"
     [ "$status" -eq 0 ]
@@ -56,11 +56,10 @@ load test_helper
 }
 
 @test "settings with multiple values are parsed correctly" {
-    cat > "$TEST_DIR/settings" << EOF
-default_pomodoro_duration=35
-default_break_duration=7
-daily_goal=10
-EOF
+    create_settings \
+        "default_pomodoro_duration=35" \
+        "default_break_duration=7" \
+        "daily_goal=10"
 
     pomodoro start "Multi-setting task"
     assert_file_contains "current" "duration=35"

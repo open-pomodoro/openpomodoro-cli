@@ -71,3 +71,19 @@ assert_hook_contains() {
         return 1
     }
 }
+
+create_settings() {
+    local settings_file="$TEST_DIR/settings"
+
+    if [[ "$1" == *"/"* ]]; then
+        settings_file="$1"
+        shift
+    fi
+
+    > "$settings_file"
+
+    while [ $# -gt 0 ]; do
+        echo "$1" >> "$settings_file"
+        shift
+    done
+}
