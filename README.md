@@ -304,7 +304,10 @@ The Pomodoro CLI can be configured using a `settings` file in your configuration
 Create or edit `~/.pomodoro/settings`:
 
 ```
-daily_goal=8 default_pomodoro_duration=25m default_break_duration=5m default_tags=work,focus
+daily_goal=8
+default_pomodoro_duration=25m
+default_break_duration=5m
+default_tags=work,focus
 ```
 
 ### Duration Format
