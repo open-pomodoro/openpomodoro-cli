@@ -44,16 +44,18 @@ func init() {
 
 	viper.AutomaticEnv()
 
-	var err error
+	RootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		var err error
 
-	client, err = openpomodoro.NewClient(directoryFlag)
-	if err != nil {
-		log.Fatalf("Could not create client: %v", err)
-	}
+		client, err = openpomodoro.NewClient(directoryFlag)
+		if err != nil {
+			log.Fatalf("Could not create client: %v", err)
+		}
 
-	settings, err = client.Settings()
-	if err != nil {
-		log.Fatalf("Could not retrieve settings: %v", err)
+		settings, err = client.Settings()
+		if err != nil {
+			log.Fatalf("Could not retrieve settings: %v", err)
+		}
 	}
 }
 
