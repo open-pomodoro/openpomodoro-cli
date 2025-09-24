@@ -40,4 +40,3 @@ load test_helper
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
-
