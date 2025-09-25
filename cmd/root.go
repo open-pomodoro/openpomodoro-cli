@@ -66,6 +66,14 @@ func initConfig() {
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Customize built-in flag descriptions once at startup
+	if helpFlag := RootCmd.Flags().Lookup("help"); helpFlag != nil {
+		helpFlag.Usage = "Show help"
+	}
+	if versionFlag := RootCmd.Flags().Lookup("version"); versionFlag != nil {
+		versionFlag.Usage = "Show version info"
+	}
+
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
