@@ -4,13 +4,15 @@ BATS := $(BATS_DIR)/bin/bats
 BINARY := pomodoro
 
 GO_SOURCES := $(shell find . -name '*.go' -not -path './vendor/*')
+VERSION := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "dev")
+LDFLAGS := -X main.Version=$(VERSION)
 
 .PHONY: test
 test: $(BINARY) $(BATS)
 	$(BATS) test/
 
 $(BINARY): $(GO_SOURCES) go.mod go.sum
-	go build -o $(BINARY) .
+	go build -ldflags "$(LDFLAGS)" -o $(BINARY) .
 
 $(BATS):
 	@mkdir -p $(BATS_DIR)
