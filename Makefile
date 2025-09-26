@@ -20,6 +20,10 @@ $(BATS):
 	@curl -sSL https://github.com/bats-core/bats-core/archive/$(BATS_VERSION).tar.gz | tar xz -C $(BATS_DIR) --strip-components=1
 	@chmod +x $(BATS_DIR)/bin/bats
 
+.PHONY: install
+install:
+	go install ./cmd/pomodoro
+
 .PHONY: clean
 clean:
 	rm -rf $(BATS_DIR) $(BINARY)
