@@ -32,7 +32,11 @@ Or, if you have a [Go development environment](https://golang.org/doc/install):
 go install github.com/open-pomodoro/openpomodoro-cli/cmd/pomodoro@latest
 ```
 
-> If you already have another command named `pomodoro`, use `go get github.com/open-pomodoro/openpomodoro-cli` to install the `openpomodoro-cli` command.
+Or, if you've cloned this repository:
+
+```
+make install
+```
 
 ## Usage
 
