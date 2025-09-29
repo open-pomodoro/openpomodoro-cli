@@ -92,3 +92,40 @@ create_settings_in() {
         echo "$setting_line" >> "$settings_file"
     done
 }
+
+# Create a completed pomodoro and return its timestamp
+create_completed_pomodoro() {
+    local duration="$1"
+    local description="${2:-Test task}"
+
+    # Start the pomodoro exactly [duration] minutes ago so when we finish,
+    # the elapsed time equals the planned duration
+    local ago="${duration}m"
+
+    pomodoro start "$description" --duration "$duration" --ago "$ago" >/dev/null
+    pomodoro finish >/dev/null
+    pomodoro history | head -1 | cut -d' ' -f1
+}
+
+# Assert that a command produces expected output
+assert_show_output() {
+    local timestamp="$1"
+    local attribute="$2"
+    local flags="$3"
+    local expected="$4"
+
+    run pomodoro show "$attribute" "$timestamp" $flags
+    if [ "$status" -ne 0 ]; then
+        echo "Command failed: pomodoro show $attribute $timestamp $flags"
+        echo "Exit status: $status"
+        echo "Output: $output"
+        return 1
+    fi
+    if [ "$output" != "$expected" ]; then
+        echo "Command: pomodoro show $attribute $timestamp $flags"
+        echo "Expected: '$expected'"
+        echo "Actual:   '$output'"
+        echo "Length - Expected: ${#expected}, Actual: ${#output}"
+        return 1
+    fi
+}
