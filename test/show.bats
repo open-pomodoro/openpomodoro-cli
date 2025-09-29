@@ -117,3 +117,33 @@ load test_helper
     [[ "$output" == *"duration=25"* ]]
     [[ "$output" == *"tags="* ]]
 }
+
+@test "show description quoting depends on spaces" {
+    # Test description without spaces - should not be quoted
+    pomodoro start "SingleWord" --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp1=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show description "$timestamp1"
+    [ "$status" -eq 0 ]
+    [ "$output" = "SingleWord" ]
+
+    # Test description with spaces - should be quoted in basic show output
+    pomodoro start "Multiple Word Description" --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp2=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show description "$timestamp2"
+    [ "$status" -eq 0 ]
+    [ "$output" = "Multiple Word Description" ]
+
+    # Test basic show output formatting - no quotes for single word
+    run pomodoro show "$timestamp1"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"description=SingleWord"* ]]
+
+    # Test basic show output formatting - quotes for multiple words
+    run pomodoro show "$timestamp2"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"description=\"Multiple Word Description\""* ]]
+}

@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"encoding/json"
+	"bytes"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/go-logfmt/logfmt"
 	"github.com/open-pomodoro/go-openpomodoro"
 	"github.com/open-pomodoro/openpomodoro-cli/format"
 	"github.com/spf13/cobra"
@@ -100,18 +101,32 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 		return outputPomodoroJSON(p)
 	}
 
-	// Show basic info with each attribute on a separate line
-	fmt.Printf("start_time=%s\n", p.StartTime.Format(openpomodoro.TimeFormat))
+	// Show basic info using logfmt encoding for proper quoting
+	var buf bytes.Buffer
+	enc := logfmt.NewEncoder(&buf)
+
+	enc.EncodeKeyval("start_time", p.StartTime.Format(openpomodoro.TimeFormat))
+	fmt.Println(buf.String())
+	buf.Reset()
+
 	if allFlag || p.Description != "" {
-		fmt.Printf("description=\"%s\"\n", p.Description)
+		enc.EncodeKeyval("description", p.Description)
+		fmt.Println(buf.String())
+		buf.Reset()
 	}
-	fmt.Printf("duration=%d\n", int(p.Duration.Minutes()))
+
+	enc.EncodeKeyval("duration", int(p.Duration.Minutes()))
+	fmt.Println(buf.String())
+	buf.Reset()
+
 	if allFlag || len(p.Tags) > 0 {
 		if len(p.Tags) > 0 {
-			fmt.Printf("tags=%s\n", strings.Join(p.Tags, ","))
+			enc.EncodeKeyval("tags", strings.Join(p.Tags, ","))
 		} else {
-			fmt.Printf("tags=\n")
+			enc.EncodeKeyval("tags", "")
 		}
+		fmt.Println(buf.String())
+		buf.Reset()
 	}
 
 	return nil
@@ -199,7 +214,7 @@ func showCompletedCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	completed := isCompleted(p)
+	completed := isPomodoroCompleted(p)
 
 	if numericFlag {
 		if completed {
@@ -228,7 +243,7 @@ func findPomodoroByTimestamp(timestampStr string) (*openpomodoro.Pomodoro, error
 	// Check if it's the current pomodoro
 	current, err := client.Pomodoro()
 	if err == nil && !current.IsInactive() {
-		if current.StartTime.Equal(timestamp) {
+		if current.Matches(&openpomodoro.Pomodoro{StartTime: timestamp}) {
 			return current, nil
 		}
 	}
@@ -240,23 +255,12 @@ func findPomodoroByTimestamp(timestampStr string) (*openpomodoro.Pomodoro, error
 	}
 
 	for _, p := range history.Pomodoros {
-		if p.StartTime.Equal(timestamp) {
+		if p.Matches(&openpomodoro.Pomodoro{StartTime: timestamp}) {
 			return p, nil
 		}
 	}
 
 	return nil, fmt.Errorf("pomodoro with timestamp %s not found", timestampStr)
-}
-
-func isCompleted(p *openpomodoro.Pomodoro) bool {
-	// Check if this pomodoro is in history (completed) vs current (active)
-	current, err := client.Pomodoro()
-	if err == nil && !current.IsInactive() {
-		if current.StartTime.Equal(p.StartTime) {
-			return false // This is the current pomodoro
-		}
-	}
-	return true // Found in history, so it's completed
 }
 
 type PomodoroJSON struct {
@@ -269,8 +273,8 @@ type PomodoroJSON struct {
 }
 
 func outputPomodoroJSON(p *openpomodoro.Pomodoro) error {
-	completed := isCompleted(p)
-	pj := PomodoroJSON{
+	completed := isPomodoroCompleted(p)
+	pomodoroData := PomodoroJSON{
 		StartTime:   p.StartTime.Format(openpomodoro.TimeFormat),
 		Description: p.Description,
 		Duration:    int(p.Duration.Minutes()),
@@ -279,11 +283,5 @@ func outputPomodoroJSON(p *openpomodoro.Pomodoro) error {
 		IsCurrent:   !completed,
 	}
 
-	data, err := json.MarshalIndent(pj, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(data))
-	return nil
+	return printJSON(pomodoroData)
 }

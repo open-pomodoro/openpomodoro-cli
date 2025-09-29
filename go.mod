@@ -3,6 +3,7 @@ module github.com/open-pomodoro/openpomodoro-cli
 go 1.16
 
 require (
+	github.com/go-logfmt/logfmt v0.6.0
 	github.com/justincampbell/go-countdown v0.0.0-20180522133831-c8d99217f0f9
 	github.com/kr/logfmt v0.0.0-20210122060352-19f9bcb100e6 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect

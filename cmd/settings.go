@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -50,15 +48,15 @@ func settingsShowCmd(cmd *cobra.Command, args []string) error {
 }
 
 type SettingsJSON struct {
-	DataDirectory             string   `json:"data_directory"`
-	DailyGoal                 int      `json:"daily_goal"`
-	DefaultPomodoroDuration   int      `json:"default_pomodoro_duration"` // in minutes
-	DefaultBreakDuration      int      `json:"default_break_duration"`    // in minutes
-	DefaultTags               []string `json:"default_tags"`
+	DataDirectory           string   `json:"data_directory"`
+	DailyGoal               int      `json:"daily_goal"`
+	DefaultPomodoroDuration int      `json:"default_pomodoro_duration"` // in minutes
+	DefaultBreakDuration    int      `json:"default_break_duration"`    // in minutes
+	DefaultTags             []string `json:"default_tags"`
 }
 
 func outputSettingsJSON() error {
-	sj := SettingsJSON{
+	settingsData := SettingsJSON{
 		DataDirectory:           client.Directory,
 		DailyGoal:               settings.DailyGoal,
 		DefaultPomodoroDuration: int(settings.DefaultPomodoroDuration.Minutes()),
@@ -66,16 +64,5 @@ func outputSettingsJSON() error {
 		DefaultTags:             settings.DefaultTags,
 	}
 
-	data, err := json.MarshalIndent(sj, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(data))
-	return nil
-}
-
-func formatDuration(d time.Duration) string {
-	minutes := int(d.Minutes())
-	return fmt.Sprintf("%d minutes", minutes)
+	return printJSON(settingsData)
 }

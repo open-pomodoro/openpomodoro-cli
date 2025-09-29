@@ -116,13 +116,16 @@ assert_show_output() {
 
     run pomodoro show "$attribute" "$timestamp" $flags
     if [ "$status" -ne 0 ]; then
-        echo "Command failed with status $status"
+        echo "Command failed: pomodoro show $attribute $timestamp $flags"
+        echo "Exit status: $status"
         echo "Output: $output"
         return 1
     fi
     if [ "$output" != "$expected" ]; then
+        echo "Command: pomodoro show $attribute $timestamp $flags"
         echo "Expected: '$expected'"
-        echo "Actual: '$output'"
+        echo "Actual:   '$output'"
+        echo "Length - Expected: ${#expected}, Actual: ${#output}"
         return 1
     fi
 }

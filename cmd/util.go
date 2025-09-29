@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/justincampbell/go-countdown"
 	"github.com/justincampbell/go-countdown/format"
+	"github.com/open-pomodoro/go-openpomodoro"
 )
 
 // wait displays a countdown timer for the specified duration
@@ -27,4 +29,21 @@ func parseDurationMinutes(s string) (time.Duration, error) {
 		s = fmt.Sprintf("%sm", s)
 	}
 	return time.ParseDuration(s)
+}
+
+// printJSON marshals a value as indented JSON and prints it
+func printJSON(v interface{}) error {
+	data, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(data))
+	return nil
+}
+
+// isPomodoroCompleted returns true if the given pomodoro is completed (not current)
+func isPomodoroCompleted(p *openpomodoro.Pomodoro) bool {
+	current, _ := client.Pomodoro()
+	return current.IsInactive() || !current.Matches(p)
 }
