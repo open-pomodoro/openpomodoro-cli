@@ -147,3 +147,276 @@ load test_helper
     [ "$status" -eq 0 ]
     [[ "$output" == *"description=\"Multiple Word Description\""* ]]
 }
+
+@test "show JSON IsCurrent logic for active pomodoro" {
+    pomodoro start "Active task" --duration 30
+
+    current_info=$(pomodoro history | head -1)
+    timestamp=$(echo "$current_info" | cut -d' ' -f1)
+
+    run pomodoro show "$timestamp" --json
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"\"completed\": false"* ]]
+    [[ "$output" == *"\"is_current\": true"* ]]
+}
+
+@test "show JSON IsCurrent logic for completed pomodoro" {
+    timestamp=$(create_completed_pomodoro 25 "Completed task")
+
+    run pomodoro show "$timestamp" --json
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"\"completed\": true"* ]]
+    [[ "$output" == *"\"is_current\": false"* ]]
+}
+
+@test "show JSON IsCurrent logic edge case - completed current pomodoro" {
+    pomodoro start "Quick task" --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show "$timestamp" --json
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"\"completed\": true"* ]]
+    [[ "$output" == *"\"is_current\": false"* ]]
+}
+
+@test "show with malformed timestamp format returns specific error" {
+    run pomodoro show "not-a-timestamp"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"invalid timestamp format"* ]]
+
+    run pomodoro show "2023-13-45T99:99:99Z"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"invalid timestamp format"* ]]
+
+    run pomodoro show "2023/01/01 12:00:00"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"invalid timestamp format"* ]]
+}
+
+@test "show with valid timestamp format but non-existent pomodoro returns not found error" {
+    run pomodoro show "2025-01-01T12:00:00-05:00"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"not found"* ]]
+
+    run pomodoro show "2020-06-15T09:30:00Z"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"not found"* ]]
+}
+
+@test "show start_time with unix flag validation" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show start_time "$timestamp"
+    [ "$status" -eq 0 ]
+    [ "$output" = "$timestamp" ]
+
+    run pomodoro show start_time "$timestamp" --unix
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ ^[0-9]+$ ]]
+}
+
+@test "show completed with numeric flag edge cases" {
+    pomodoro start "Current task" --duration 30
+    current_info=$(pomodoro history | head -1)
+    current_timestamp=$(echo "$current_info" | cut -d' ' -f1)
+
+    run pomodoro show completed "$current_timestamp"
+    [ "$status" -eq 0 ]
+    [ "$output" = "false" ]
+
+    run pomodoro show completed "$current_timestamp" --numeric
+    [ "$status" -eq 0 ]
+    [ "$output" = "0" ]
+
+    pomodoro cancel >/dev/null 2>&1 || true
+
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show completed "$timestamp"
+    [ "$status" -eq 0 ]
+    [ "$output" = "true" ]
+
+    run pomodoro show completed "$timestamp" --numeric
+    [ "$status" -eq 0 ]
+    [ "$output" = "1" ]
+}
+
+@test "show tags with empty tags edge cases" {
+    pomodoro start "No tags task" --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show tags "$timestamp"
+    [ "$status" -eq 0 ]
+    [ "$output" = "" ]
+
+    run pomodoro show tags "$timestamp" --raw
+    [ "$status" -eq 0 ]
+    [ "$output" = "" ]
+}
+
+@test "show error handling for edge case pomodoro data" {
+    pomodoro start "Very short test" --duration 1 --ago 1m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show duration "$timestamp"
+    [ "$status" -eq 0 ]
+    [ "$output" = "1:00" ]
+
+    run pomodoro show duration "$timestamp" --minutes
+    [ "$status" -eq 0 ]
+    [ "$output" = "1" ]
+
+    run pomodoro show duration "$timestamp" --seconds
+    [ "$status" -eq 0 ]
+    [ "$output" = "60" ]
+}
+
+@test "show subcommands reject invalid flag combinations" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show start_time "$timestamp" --unix --unix
+    [ "$status" -eq 0 ]
+
+    run pomodoro show tags "$timestamp" --raw --raw
+    [ "$status" -eq 0 ]
+}
+
+@test "show subcommands handle invalid arguments gracefully" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show duration "$timestamp" extra_arg
+    [ "$status" -ne 0 ]
+
+    run pomodoro show description "$timestamp" extra_arg
+    [ "$status" -ne 0 ]
+
+    run pomodoro show tags "$timestamp" extra_arg
+    [ "$status" -ne 0 ]
+
+    run pomodoro show start_time "$timestamp" extra_arg
+    [ "$status" -ne 0 ]
+
+    run pomodoro show completed "$timestamp" extra_arg
+    [ "$status" -ne 0 ]
+}
+
+@test "show subcommands handle missing timestamp argument" {
+    run pomodoro show duration
+    [ "$status" -ne 0 ]
+
+    run pomodoro show description
+    [ "$status" -ne 0 ]
+
+    run pomodoro show tags
+    [ "$status" -ne 0 ]
+
+    run pomodoro show start_time
+    [ "$status" -ne 0 ]
+
+    run pomodoro show completed
+    [ "$status" -ne 0 ]
+}
+
+@test "show command flag inheritance and conflicts" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show duration "$timestamp" --unknown-flag
+    [ "$status" -ne 0 ]
+
+    run pomodoro show duration "$timestamp"
+    [ "$status" -eq 0 ]
+}
+
+@test "show command with malformed flags" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show duration "$timestamp" --invalid-flag
+    [ "$status" -ne 0 ]
+
+    run pomodoro show tags "$timestamp" --raw=invalid_value
+    [ "$status" -ne 0 ]
+
+    run pomodoro show completed "$timestamp" --numeric
+    [ "$status" -eq 0 ]
+
+    run pomodoro show start_time "$timestamp" --unix
+    [ "$status" -eq 0 ]
+}
+
+@test "show command boundary value testing" {
+    pomodoro start "Large duration test" --duration 120 --ago 120m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show duration "$timestamp" --minutes
+    [ "$status" -eq 0 ]
+    [ "$output" = "120" ]
+
+    run pomodoro show duration "$timestamp" --seconds
+    [ "$status" -eq 0 ]
+    [ "$output" = "7200" ]
+
+    pomodoro start "Short duration" --duration 1 --ago 1m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp_short=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show duration "$timestamp_short" --seconds
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ ^[0-9]+$ ]]
+}
+
+@test "show command with special characters in data" {
+    pomodoro start "Task with \"quotes\" and 'apostrophes' and \$symbols" --tags "tag-with-dash,tag_with_underscore,tag.with.dots" --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show description "$timestamp"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"quotes"* ]]
+    [[ "$output" == *"apostrophes"* ]]
+    [[ "$output" == *"\$symbols"* ]]
+
+    run pomodoro show tags "$timestamp"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"tag-with-dash"* ]]
+    [[ "$output" == *"tag_with_underscore"* ]]
+    [[ "$output" == *"tag.with.dots"* ]]
+
+    run pomodoro show tags "$timestamp" --raw
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"tag-with-dash,tag_with_underscore,tag.with.dots"* ]]
+}
+
+@test "show command help and usage validation" {
+    run pomodoro show --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Available Commands"* ]]
+
+    run pomodoro show duration --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Show pomodoro duration"* ]]
+
+    run pomodoro show tags --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Show pomodoro tags"* ]]
+}
+
+@test "show command concurrent access edge case" {
+    timestamp=$(create_completed_pomodoro 25)
+
+    run pomodoro show duration "$timestamp"
+    [ "$status" -eq 0 ]
+
+    run pomodoro show description "$timestamp"
+    [ "$status" -eq 0 ]
+
+    run pomodoro show tags "$timestamp"
+    [ "$status" -eq 0 ]
+
+    run pomodoro show "$timestamp" --json
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"\"duration\": 25"* ]]
+}
