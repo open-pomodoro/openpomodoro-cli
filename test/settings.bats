@@ -73,21 +73,21 @@ load test_helper
 
     run pomodoro settings
     [ "$status" -eq 0 ]
-    [[ "$output" =~ "Data Directory: $TEST_DIR" ]]
-    [[ "$output" =~ "Daily Goal: 8 pomodoros" ]]
-    [[ "$output" =~ "Default Pomodoro Duration: 30 minutes" ]]
-    [[ "$output" =~ "Default Break Duration: 10 minutes" ]]
-    [[ "$output" =~ "Default Tags: none" ]]
+    [[ "$output" =~ "data_directory=$TEST_DIR" ]]
+    [[ "$output" =~ "daily_goal=8" ]]
+    [[ "$output" =~ "default_pomodoro_duration=30" ]]
+    [[ "$output" =~ "default_break_duration=10" ]]
+    [[ "$output" =~ "default_tags=" ]]
 }
 
 @test "settings command shows default values when no settings file exists" {
     run pomodoro settings
     [ "$status" -eq 0 ]
-    [[ "$output" =~ "Data Directory: $TEST_DIR" ]]
-    [[ "$output" =~ "Daily Goal: 0 pomodoros" ]]
-    [[ "$output" =~ "Default Pomodoro Duration: 25 minutes" ]]
-    [[ "$output" =~ "Default Break Duration: 5 minutes" ]]
-    [[ "$output" =~ "Default Tags: none" ]]
+    [[ "$output" =~ "data_directory=$TEST_DIR" ]]
+    [[ "$output" =~ "daily_goal=0" ]]
+    [[ "$output" =~ "default_pomodoro_duration=25" ]]
+    [[ "$output" =~ "default_break_duration=5" ]]
+    [[ "$output" =~ "default_tags=" ]]
 }
 
 @test "settings command JSON output" {

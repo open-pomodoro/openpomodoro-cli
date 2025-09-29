@@ -91,3 +91,29 @@ load test_helper
     [[ "$output" == *"\"completed\": true"* ]]
     [[ "$output" == *"\"is_current\": false"* ]]
 }
+
+@test "show omits empty attributes by default" {
+    pomodoro start --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show "$timestamp"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"start_time=$timestamp"* ]]
+    [[ "$output" == *"duration=25"* ]]
+    [[ "$output" != *"description="* ]]
+    [[ "$output" != *"tags="* ]]
+}
+
+@test "show --all includes empty attributes" {
+    pomodoro start --duration 25 --ago 25m >/dev/null
+    pomodoro finish >/dev/null
+    timestamp=$(pomodoro history | head -1 | cut -d' ' -f1)
+
+    run pomodoro show "$timestamp" --all
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"start_time=$timestamp"* ]]
+    [[ "$output" == *"description=\"\""* ]]
+    [[ "$output" == *"duration=25"* ]]
+    [[ "$output" == *"tags="* ]]
+}

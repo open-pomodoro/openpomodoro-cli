@@ -22,8 +22,9 @@ func init() {
 	}
 
 	// Add JSON flag to parent command (applies to basic info)
-	var jsonFlag bool
+	var jsonFlag, allFlag bool
 	showCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "output as JSON")
+	showCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "show all attributes including empty ones")
 
 	// Duration subcommand
 	durationCmd := &cobra.Command{
@@ -88,6 +89,7 @@ func init() {
 func showBasicCmd(cmd *cobra.Command, args []string) error {
 	timestamp := args[0]
 	jsonFlag, _ := cmd.Flags().GetBool("json")
+	allFlag, _ := cmd.Flags().GetBool("all")
 
 	p, err := findPomodoroByTimestamp(timestamp)
 	if err != nil {
@@ -98,14 +100,18 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 		return outputPomodoroJSON(p)
 	}
 
-	// Show basic info
-	fmt.Printf("Pomodoro at %s\n", p.StartTime.Format(openpomodoro.TimeFormat))
-	fmt.Printf("Duration: %s\n", format.DurationAsTime(p.Duration))
-	if p.Description != "" {
-		fmt.Printf("Description: %s\n", p.Description)
+	// Show basic info with each attribute on a separate line
+	fmt.Printf("start_time=%s\n", p.StartTime.Format(openpomodoro.TimeFormat))
+	if allFlag || p.Description != "" {
+		fmt.Printf("description=\"%s\"\n", p.Description)
 	}
-	if len(p.Tags) > 0 {
-		fmt.Printf("Tags: %s\n", strings.Join(p.Tags, ", "))
+	fmt.Printf("duration=%d\n", int(p.Duration.Minutes()))
+	if allFlag || len(p.Tags) > 0 {
+		if len(p.Tags) > 0 {
+			fmt.Printf("tags=%s\n", strings.Join(p.Tags, ","))
+		} else {
+			fmt.Printf("tags=\n")
+		}
 	}
 
 	return nil

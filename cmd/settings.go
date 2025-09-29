@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -33,15 +34,16 @@ func settingsShowCmd(cmd *cobra.Command, args []string) error {
 		return outputSettingsJSON()
 	}
 
-	fmt.Printf("Data Directory: %s\n", client.Directory)
-	fmt.Printf("Daily Goal: %d pomodoros\n", settings.DailyGoal)
-	fmt.Printf("Default Pomodoro Duration: %s\n", formatDuration(settings.DefaultPomodoroDuration))
-	fmt.Printf("Default Break Duration: %s\n", formatDuration(settings.DefaultBreakDuration))
+	fmt.Printf("data_directory=%s\n", client.Directory)
+	fmt.Printf("daily_goal=%d\n", settings.DailyGoal)
+	fmt.Printf("default_pomodoro_duration=%d\n", int(settings.DefaultPomodoroDuration.Minutes()))
+	fmt.Printf("default_break_duration=%d\n", int(settings.DefaultBreakDuration.Minutes()))
 
 	if len(settings.DefaultTags) > 0 {
-		fmt.Printf("Default Tags: %v\n", settings.DefaultTags)
+		// Format as comma-separated string like in history files
+		fmt.Printf("default_tags=%s\n", strings.Join(settings.DefaultTags, ","))
 	} else {
-		fmt.Printf("Default Tags: none\n")
+		fmt.Printf("default_tags=\n")
 	}
 
 	return nil
