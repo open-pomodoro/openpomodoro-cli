@@ -14,7 +14,14 @@ BATS_SUPPORT := $(BATS_DIR)/bats-support
 BATS_ASSERT := $(BATS_DIR)/bats-assert
 
 .PHONY: test
-test: $(BINARY) $(BATS_CORE) $(BATS_SUPPORT) $(BATS_ASSERT)
+test: test-unit test-acceptance
+
+.PHONY: test-unit
+test-unit:
+	go test ./...
+
+.PHONY: test-acceptance
+test-acceptance: $(BINARY) $(BATS_CORE) $(BATS_SUPPORT) $(BATS_ASSERT)
 	$(BATS_CORE)/bin/bats test/
 
 $(BINARY): $(GO_SOURCES) go.mod go.sum
