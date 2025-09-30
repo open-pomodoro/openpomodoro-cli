@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"time"
-
+	"github.com/open-pomodoro/go-openpomodoro"
 	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +22,7 @@ func clearCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "clear", getCommandArgs(cmd), 0); err != nil {
+	if err := hook.Run(client, "stop", p.StartTime.Format(openpomodoro.TimeFormat), "clear", getCommandArgs(cmd), 0); err != nil {
 		return err
 	}
 
