@@ -24,7 +24,7 @@ load test_helper
     pomodoro start "Original task" --ago 5m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_contains "current" "duration=50"
 }
 
@@ -33,7 +33,7 @@ load test_helper
     create_hook "break" 'echo "BREAK_HOOK_RAN" >> "$TEST_DIR/hook_log"; exit 1'
 
     run pomodoro break
-    [ "$status" -ne 0 ]
+    assert_failure
     assert_hook_contains "BREAK_HOOK_RAN"
 }
 
@@ -42,7 +42,7 @@ load test_helper
     create_settings_in "$ALT_DIR/settings" "default_pomodoro_duration=60"
 
     run "$POMODORO_BIN" --directory "$ALT_DIR" start "Task in alt dir"
-    [ "$status" -eq 0 ]
+    assert_success
 
     grep -q "duration=60" "$ALT_DIR/current" || {
         echo "Expected duration=60 in $ALT_DIR/current"
@@ -72,22 +72,22 @@ load test_helper
         "daily_goal=8"
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "data_directory=$TEST_DIR" ]]
-    [[ "$output" =~ "daily_goal=8" ]]
-    [[ "$output" =~ "default_pomodoro_duration=30" ]]
-    [[ "$output" =~ "default_break_duration=10" ]]
-    [[ "$output" =~ "default_tags=" ]]
+    assert_success
+    assert_output --partial "data_directory=$TEST_DIR"
+    assert_output --partial "daily_goal=8"
+    assert_output --partial "default_pomodoro_duration=30"
+    assert_output --partial "default_break_duration=10"
+    assert_output --partial "default_tags="
 }
 
 @test "settings command shows default values when no settings file exists" {
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "data_directory=$TEST_DIR" ]]
-    [[ "$output" =~ "daily_goal=0" ]]
-    [[ "$output" =~ "default_pomodoro_duration=25" ]]
-    [[ "$output" =~ "default_break_duration=5" ]]
-    [[ "$output" =~ "default_tags=" ]]
+    assert_success
+    assert_output --partial "data_directory=$TEST_DIR"
+    assert_output --partial "daily_goal=0"
+    assert_output --partial "default_pomodoro_duration=25"
+    assert_output --partial "default_break_duration=5"
+    assert_output --partial "default_tags="
 }
 
 @test "settings command JSON output" {
@@ -96,12 +96,12 @@ load test_helper
         "daily_goal=12"
 
     run pomodoro settings --json
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "\"data_directory\":" ]]
-    [[ "$output" =~ "\"daily_goal\": 12" ]]
-    [[ "$output" =~ "\"default_pomodoro_duration\": 40" ]]
-    [[ "$output" =~ "\"default_break_duration\": 5" ]]
-    [[ "$output" =~ '"default_tags": []' ]]
+    assert_success
+    assert_output --partial '"data_directory"'
+    assert_output --partial '"daily_goal": 12'
+    assert_output --partial '"default_pomodoro_duration": 40'
+    assert_output --partial '"default_break_duration": 5'
+    assert_output --partial '"default_tags": []'
 }
 
 
@@ -111,15 +111,15 @@ load test_helper
         "default_tags=work,urgent,project"
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "default_tags=work,urgent,project" ]]
+    assert_success
+    assert_output --partial "default_tags=work,urgent,project"
 
     run pomodoro settings --json
-    [ "$status" -eq 0 ]
-    [[ "$output" == *'"default_tags": ['* ]]
-    [[ "$output" == *'"work"'* ]]
-    [[ "$output" == *'"urgent"'* ]]
-    [[ "$output" == *'"project"'* ]]
+    assert_success
+    assert_output --regexp '"default_tags".*\['
+    assert_output --partial '"work"'
+    assert_output --partial '"urgent"'
+    assert_output --partial '"project"'
 }
 
 @test "settings command handles malformed settings file gracefully" {
@@ -128,9 +128,9 @@ load test_helper
     echo "daily_goal=8" >> "$TEST_DIR/settings"
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "default_pomodoro_duration=30" ]]
-    [[ "$output" =~ "daily_goal=8" ]]
+    assert_success
+    assert_output --partial "default_pomodoro_duration=30"
+    assert_output --partial "daily_goal=8"
 }
 
 @test "settings command with very large duration values" {
@@ -139,14 +139,14 @@ load test_helper
         "default_break_duration=120"
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "default_pomodoro_duration=999" ]]
-    [[ "$output" =~ "default_break_duration=120" ]]
+    assert_success
+    assert_output --partial "default_pomodoro_duration=999"
+    assert_output --partial "default_break_duration=120"
 
     run pomodoro settings --json
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "\"default_pomodoro_duration\": 999" ]]
-    [[ "$output" =~ "\"default_break_duration\": 120" ]]
+    assert_success
+    assert_output --partial "\"default_pomodoro_duration\": 999"
+    assert_output --partial "\"default_break_duration\": 120"
 }
 
 @test "settings command with negative values" {
@@ -155,17 +155,17 @@ load test_helper
         "daily_goal=-1"
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "default_pomodoro_duration=-5" ]]
-    [[ "$output" =~ "daily_goal=-1" ]]
+    assert_success
+    assert_output --partial "default_pomodoro_duration=-5"
+    assert_output --partial "daily_goal=-1"
 }
 
 @test "settings command short flags work correctly" {
     create_settings "daily_goal=5"
 
     run pomodoro settings -j
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "\"daily_goal\": 5" ]]
+    assert_success
+    assert_output --partial "\"daily_goal\": 5"
 }
 
 @test "settings command with empty default_tags value" {
@@ -174,21 +174,20 @@ load test_helper
         "default_tags="
 
     run pomodoro settings
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "default_tags=" ]]
+    assert_success
+    assert_output --partial "default_tags="
 
     run pomodoro settings --json
-    [ "$status" -eq 0 ]
-    [[ "$output" == *'"default_tags":'* ]]
+    assert_success
+    assert_output --partial '"default_tags"'
 }
 
 @test "settings command data_directory path validation" {
     run pomodoro settings
-    [ "$status" -eq 0 ]
+    assert_success
 
     data_dir=$(echo "$output" | grep "data_directory=" | cut -d'=' -f2)
 
-    [ "$data_dir" = "$TEST_DIR" ]
-
-    [[ "$data_dir" =~ ^/ ]]
+    assert_equal "$data_dir" "$TEST_DIR"
+    assert_regex "$data_dir" '^/'
 }

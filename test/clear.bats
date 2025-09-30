@@ -7,7 +7,7 @@ load test_helper
     pomodoro finish
     pomodoro start "Second task"
     run pomodoro clear
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_file_contains "history" "First task"
     assert_file_empty "current"
@@ -15,13 +15,13 @@ load test_helper
 
 @test "clear with no current pomodoro succeeds" {
     run pomodoro clear
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_empty "current"
 }
 
 @test "clear produces no output" {
     pomodoro start "Test task"
     run pomodoro clear
-    [ "$status" -eq 0 ]
-    [ -z "$output" ]
+    assert_success
+    refute_output
 }

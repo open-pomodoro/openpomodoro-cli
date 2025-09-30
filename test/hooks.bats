@@ -6,7 +6,7 @@ load test_helper
     create_hook "start" 'echo "START_HOOK_EXECUTED" >> "$TEST_DIR/hook_log"'
 
     run pomodoro start "Test task"
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "START_HOOK_EXECUTED"
 }
@@ -16,7 +16,7 @@ load test_helper
 
     pomodoro start "Test task" --ago 5m
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "STOP_HOOK_EXECUTED"
 }
@@ -26,7 +26,7 @@ load test_helper
 
     pomodoro start "Test task"
     run pomodoro cancel
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "CANCEL_HOOK_EXECUTED"
 }
@@ -36,7 +36,7 @@ load test_helper
 
     pomodoro start "Test task"
     run pomodoro clear
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "CLEAR_HOOK_EXECUTED"
 }
@@ -48,7 +48,7 @@ load test_helper
     create_hook "start" 'echo "REPEAT_HOOK_EXECUTED" >> "$TEST_DIR/hook_log"'
 
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "REPEAT_HOOK_EXECUTED"
 }
@@ -58,23 +58,25 @@ load test_helper
     echo 'echo "SHOULD_NOT_RUN" >> "$TEST_DIR/hook_log"' > "$TEST_DIR/hooks/start"
 
     run pomodoro start "Test task"
-    [ "$status" -ne 0 ]
+    assert_failure
 
-    [ ! -f "$TEST_DIR/hook_log" ]
+    run test -f "$TEST_DIR/hook_log"
+    assert_failure
 }
 
 @test "missing hook does not cause error" {
     run pomodoro start "Test task"
-    [ "$status" -eq 0 ]
+    assert_success
 
-    [ ! -f "$TEST_DIR/hook_log" ]
+    run test -f "$TEST_DIR/hook_log"
+    assert_failure
 }
 
 @test "hook failure does not prevent command from succeeding" {
     create_hook "start" 'echo "HOOK_RAN" >> "$TEST_DIR/hook_log"; exit 1'
 
     run pomodoro start "Test task"
-    [ "$status" -ne 0 ]
+    assert_failure
 
     assert_hook_contains "HOOK_RAN"
 }
@@ -85,7 +87,7 @@ load test_helper
 
     pomodoro start "Test task" --ago 5m
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_hook_contains "START_EXECUTED"
     assert_hook_contains "STOP_EXECUTED"

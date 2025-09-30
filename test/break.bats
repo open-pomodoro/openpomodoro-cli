@@ -6,7 +6,7 @@ load test_helper
     create_hook "break" 'echo "BREAK_HOOK" >> "$TEST_DIR/hook_log"; exit 1'
 
     run pomodoro break
-    [ "$status" -ne 0 ]
+    assert_failure
 
     assert_hook_contains "BREAK_HOOK"
 }
@@ -15,12 +15,12 @@ load test_helper
     create_hook "break" 'echo "BREAK_STARTED" >> "$TEST_DIR/hook_log"; exit 1'
 
     run pomodoro break "10"
-    [ "$status" -ne 0 ]
+    assert_failure
 
     assert_hook_contains "BREAK_STARTED"
 }
 
 @test "break with invalid duration fails" {
     run pomodoro break "invalid"
-    [ "$status" -ne 0 ]
+    assert_failure
 }
