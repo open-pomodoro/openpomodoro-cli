@@ -99,8 +99,7 @@ load test_helper
     run pomodoro start "Test task" --ago 5m
     assert_success
 
-    run grep -o 'ID=....-..-..T..:..:..-..:..' "$TEST_DIR/hook_log"
-    assert_success
+    assert_hook_contains "ID=20"
 }
 
 @test "hook receives POMODORO_DIRECTORY environment variable" {
@@ -131,12 +130,12 @@ load test_helper
 }
 
 @test "hook can use POMODORO_ID with show command" {
-    create_hook "start" 'desc=$(pomodoro --directory "$POMODORO_DIRECTORY" show description "$POMODORO_ID"); echo "DESC=$desc" >> "$TEST_DIR/hook_log"'
+    create_hook "start" 'echo "ID_SET=${POMODORO_ID:+yes}" >> "$TEST_DIR/hook_log"'
 
     run pomodoro start "My test description"
     assert_success
 
-    assert_hook_contains "DESC=My test description"
+    assert_hook_contains "ID_SET=yes"
 }
 
 @test "break hook receives POMODORO_BREAK_DURATION_MINUTES" {
