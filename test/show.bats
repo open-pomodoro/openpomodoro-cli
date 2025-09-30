@@ -100,8 +100,8 @@ load test_helper
 
     run pomodoro show "$timestamp"
     assert_success
-    assert_output --partial "start_time=$timestamp"
-    assert_output --partial "duration=25"
+    assert_line "start_time=$timestamp"
+    assert_line "duration=25"
     refute_output --partial "description="
     refute_output --partial "tags="
 }
@@ -113,10 +113,10 @@ load test_helper
 
     run pomodoro show "$timestamp" --all
     assert_success
-    assert_output --partial "start_time=$timestamp"
-    assert_output --partial "description="
-    assert_output --partial "duration=25"
-    assert_output --partial "tags="
+    assert_line "start_time=$timestamp"
+    assert_line "description="
+    assert_line "duration=25"
+    assert_line "tags="
 }
 
 @test "show description quoting depends on spaces" {
@@ -132,7 +132,7 @@ load test_helper
     # Test basic show output formatting - no quotes for single word
     run pomodoro show "$timestamp1"
     assert_success
-    assert_output --partial "description=SingleWord"
+    assert_line "description=SingleWord"
 
     # Test description with spaces - should be quoted in basic show output
     pomodoro start "Multiple Word Description" --duration 25 --ago 25m >/dev/null
@@ -146,7 +146,7 @@ load test_helper
     # Test basic show output formatting - quotes for multiple words
     run pomodoro show "$timestamp2"
     assert_success
-    assert_output --partial "description=\"Multiple Word Description\""
+    assert_line "description=\"Multiple Word Description\""
 }
 
 @test "show JSON IsCurrent logic for active pomodoro" {

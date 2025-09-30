@@ -1,17 +1,33 @@
 package cmd
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/go-logfmt/logfmt"
 	"github.com/open-pomodoro/go-openpomodoro"
 	"github.com/open-pomodoro/openpomodoro-cli/format"
 	"github.com/spf13/cobra"
 )
+
+// quotingTriggerChars defines the set of characters that, if present in a value,
+// will trigger quoting and escaping in key-value output. These include:
+// - space, tab, newline, carriage return: can break key-value formatting
+// - double quote, backslash: require escaping in quoted strings
+const quotingTriggerChars = " \t\n\r\"\\"
+
+// formatKeyValue formats a key-value pair for output. Values containing special
+// characters (spaces, quotes, backslashes, etc.) are quoted and escaped.
+// Backslashes and quotes within values are escaped with backslashes.
+func formatKeyValue(key, value string) string {
+	if strings.ContainsAny(value, quotingTriggerChars) {
+		escaped := strings.ReplaceAll(value, "\\", "\\\\")
+		escaped = strings.ReplaceAll(escaped, "\"", "\\\"")
+		return key + "=\"" + escaped + "\""
+	}
+	return key + "=" + value
+}
 
 func init() {
 	// Parent show command - shows basic info
@@ -101,32 +117,16 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 		return outputPomodoroJSON(p)
 	}
 
-	// Show basic info using logfmt encoding for proper quoting
-	var buf bytes.Buffer
-	enc := logfmt.NewEncoder(&buf)
-
-	enc.EncodeKeyval("start_time", p.StartTime.Format(openpomodoro.TimeFormat))
-	fmt.Println(buf.String())
-	buf.Reset()
+	fmt.Println(formatKeyValue("start_time", p.StartTime.Format(openpomodoro.TimeFormat)))
 
 	if allFlag || p.Description != "" {
-		enc.EncodeKeyval("description", p.Description)
-		fmt.Println(buf.String())
-		buf.Reset()
+		fmt.Println(formatKeyValue("description", p.Description))
 	}
 
-	enc.EncodeKeyval("duration", int(p.Duration.Minutes()))
-	fmt.Println(buf.String())
-	buf.Reset()
+	fmt.Printf("duration=%d\n", int(p.Duration.Minutes()))
 
 	if allFlag || len(p.Tags) > 0 {
-		if len(p.Tags) > 0 {
-			enc.EncodeKeyval("tags", strings.Join(p.Tags, ","))
-		} else {
-			enc.EncodeKeyval("tags", "")
-		}
-		fmt.Println(buf.String())
-		buf.Reset()
+		fmt.Println(formatKeyValue("tags", strings.Join(p.Tags, ",")))
 	}
 
 	return nil
