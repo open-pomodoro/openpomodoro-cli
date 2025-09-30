@@ -13,6 +13,15 @@ import (
 
 const quotingTriggerChars = " \t\n\r\"\\"
 
+func formatKeyValue(key, value string) string {
+	if strings.ContainsAny(value, quotingTriggerChars) {
+		escaped := strings.ReplaceAll(value, "\\", "\\\\")
+		escaped = strings.ReplaceAll(escaped, "\"", "\\\"")
+		return key + "=\"" + escaped + "\""
+	}
+	return key + "=" + value
+}
+
 func init() {
 	// Parent show command - shows basic info
 	showCmd := &cobra.Command{
@@ -101,26 +110,16 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 		return outputPomodoroJSON(p)
 	}
 
-	fmt.Println("start_time=" + p.StartTime.Format(openpomodoro.TimeFormat))
+	fmt.Println(formatKeyValue("start_time", p.StartTime.Format(openpomodoro.TimeFormat)))
 
 	if allFlag || p.Description != "" {
-		if strings.ContainsAny(p.Description, quotingTriggerChars) {
-			escaped := strings.ReplaceAll(p.Description, "\\", "\\\\")
-			escaped = strings.ReplaceAll(escaped, "\"", "\\\"")
-			fmt.Println("description=\"" + escaped + "\"")
-		} else {
-			fmt.Println("description=" + p.Description)
-		}
+		fmt.Println(formatKeyValue("description", p.Description))
 	}
 
 	fmt.Printf("duration=%d\n", int(p.Duration.Minutes()))
 
 	if allFlag || len(p.Tags) > 0 {
-		if len(p.Tags) > 0 {
-			fmt.Println("tags=" + strings.Join(p.Tags, ","))
-		} else {
-			fmt.Println("tags=")
-		}
+		fmt.Println(formatKeyValue("tags", strings.Join(p.Tags, ",")))
 	}
 
 	return nil
