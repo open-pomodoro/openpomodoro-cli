@@ -1,13 +1,11 @@
 package cmd
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/go-logfmt/logfmt"
 	"github.com/open-pomodoro/go-openpomodoro"
 	"github.com/open-pomodoro/openpomodoro-cli/format"
 	"github.com/spf13/cobra"
@@ -101,32 +99,24 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 		return outputPomodoroJSON(p)
 	}
 
-	// Show basic info using logfmt encoding for proper quoting
-	var buf bytes.Buffer
-	enc := logfmt.NewEncoder(&buf)
-
-	enc.EncodeKeyval("start_time", p.StartTime.Format(openpomodoro.TimeFormat))
-	fmt.Println(buf.String())
-	buf.Reset()
+	fmt.Println("start_time=" + p.StartTime.Format(openpomodoro.TimeFormat))
 
 	if allFlag || p.Description != "" {
-		enc.EncodeKeyval("description", p.Description)
-		fmt.Println(buf.String())
-		buf.Reset()
+		if strings.ContainsAny(p.Description, " \t\n\r\"\\") {
+			fmt.Println("description=\"" + p.Description + "\"")
+		} else {
+			fmt.Println("description=" + p.Description)
+		}
 	}
 
-	enc.EncodeKeyval("duration", int(p.Duration.Minutes()))
-	fmt.Println(buf.String())
-	buf.Reset()
+	fmt.Printf("duration=%d\n", int(p.Duration.Minutes()))
 
 	if allFlag || len(p.Tags) > 0 {
 		if len(p.Tags) > 0 {
-			enc.EncodeKeyval("tags", strings.Join(p.Tags, ","))
+			fmt.Println("tags=" + strings.Join(p.Tags, ","))
 		} else {
-			enc.EncodeKeyval("tags", "")
+			fmt.Println("tags=")
 		}
-		fmt.Println(buf.String())
-		buf.Reset()
 	}
 
 	return nil
