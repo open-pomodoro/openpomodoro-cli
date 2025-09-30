@@ -99,7 +99,8 @@ load test_helper
     run pomodoro start "Test task" --ago 5m
     assert_success
 
-    assert_hook_contains "ID=20"
+    run grep -E 'ID=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}' "$TEST_DIR/hook_log"
+    assert_success
 }
 
 @test "hook receives POMODORO_DIRECTORY environment variable" {
