@@ -5,7 +5,7 @@ load test_helper
 @test "finish moves current pomodoro to history" {
     pomodoro start "Work session"
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_file_empty "current"
     assert_file_contains "history" "Work session"
@@ -14,7 +14,7 @@ load test_helper
 @test "finish records actual elapsed time in history" {
     pomodoro start "Work session" -d 30 --ago 10m
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_file_contains "history" "Work session"
     assert_file_contains "history" "duration=10"
@@ -25,7 +25,7 @@ load test_helper
     pomodoro finish
     pomodoro start "Second task" --ago 3m
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
 
     assert_file_contains "history" "First task"
     assert_file_contains "history" "Second task"
@@ -34,13 +34,13 @@ load test_helper
 @test "finish outputs elapsed time" {
     pomodoro start "Test task" --ago 5m
     run pomodoro finish
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "5:" ]]
+    assert_success
+    assert_output --regexp "5:"
 }
 
 @test "finish with no current pomodoro succeeds" {
     run pomodoro finish
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_empty "current"
 }
 
@@ -49,7 +49,7 @@ load test_helper
 
     pomodoro start "Task" --ago 1m
     run pomodoro finish --break
-    [ "$status" -ne 0 ]
+    assert_failure
 }
 
 @test "finish --break with custom duration is accepted" {
@@ -57,5 +57,5 @@ load test_helper
 
     pomodoro start "Task" --ago 1m
     run pomodoro finish --break 5
-    [ "$status" -ne 0 ]
+    assert_failure
 }

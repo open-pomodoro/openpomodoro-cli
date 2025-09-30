@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+load ".bats/bats-support/load"
+load ".bats/bats-assert/load"
+
 export POMODORO_BIN="${BATS_TEST_DIRNAME}/../pomodoro"
 
 setup() {
@@ -93,7 +96,6 @@ create_settings_in() {
     done
 }
 
-# Create a completed pomodoro and return its timestamp
 create_completed_pomodoro() {
     local duration="$1"
     local description="${2:-Test task}"
@@ -107,7 +109,6 @@ create_completed_pomodoro() {
     pomodoro history | head -1 | cut -d' ' -f1
 }
 
-# Assert that a command produces expected output
 assert_show_output() {
     local timestamp="$1"
     local attribute="$2"

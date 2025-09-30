@@ -6,7 +6,7 @@ load test_helper
     pomodoro start "Original task" --ago 5m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_contains "current" "Original task"
 }
 
@@ -14,7 +14,7 @@ load test_helper
     pomodoro start "Task with tags" -t "work,urgent" --ago 5m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_contains "current" "work,urgent"
 }
 
@@ -22,7 +22,7 @@ load test_helper
     pomodoro start "Task" -d 45 --ago 10m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_contains "current" "duration=25"
 }
 
@@ -30,7 +30,7 @@ load test_helper
     pomodoro start "Task" --ago 5m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
+    assert_success
     assert_file_contains "current" "$(date '+%Y-%m-%d')"
 }
 
@@ -39,11 +39,11 @@ load test_helper
     pomodoro start "Repeated task" --ago 5m
     pomodoro finish
     run pomodoro repeat
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "Repeated task" ]]
+    assert_success
+    assert_output --partial "Repeated task"
 }
 
 @test "repeat with no history fails" {
     run pomodoro repeat
-    [ "$status" -ne 0 ]
+    assert_failure
 }

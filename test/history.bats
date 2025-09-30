@@ -4,8 +4,8 @@ load test_helper
 
 @test "history shows nothing when no history exists" {
     run pomodoro history
-    [ "$status" -eq 0 ]
-    [ -z "$output" ]
+    assert_success
+    refute_output
 }
 
 @test "history shows completed pomodoros" {
@@ -15,9 +15,9 @@ load test_helper
     pomodoro finish
 
     run pomodoro history
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "First task" ]]
-    [[ "$output" =~ "Second task" ]]
+    assert_success
+    assert_output --partial "First task"
+    assert_output --partial "Second task"
 }
 
 @test "history limit flag restricts output" {
@@ -29,10 +29,10 @@ load test_helper
     pomodoro finish
 
     run pomodoro history --limit 2
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "Task 2" ]]
-    [[ "$output" =~ "Task 3" ]]
-    [[ ! "$output" =~ "Task 1" ]]
+    assert_success
+    assert_output --partial "Task 2"
+    assert_output --partial "Task 3"
+    refute_output --partial "Task 1"
 }
 
 @test "history shows timestamps and durations" {
@@ -40,10 +40,10 @@ load test_helper
     pomodoro finish
 
     run pomodoro history
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "Test task" ]]
-    [[ "$output" =~ "$(date '+%Y-%m-%d')" ]]
-    [[ "$output" =~ "duration=10" ]]
+    assert_success
+    assert_output --partial "Test task"
+    assert_output --partial "$(date '+%Y-%m-%d')"
+    assert_output --partial "duration=10"
 }
 
 @test "history with zero limit shows all entries" {
@@ -53,7 +53,7 @@ load test_helper
     pomodoro finish
 
     run pomodoro history --limit 0
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "Task 1" ]]
-    [[ "$output" =~ "Task 2" ]]
+    assert_success
+    assert_output --partial "Task 1"
+    assert_output --partial "Task 2"
 }
