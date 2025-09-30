@@ -21,7 +21,7 @@ test-unit:
 	go test ./...
 
 .PHONY: test-acceptance
-test-acceptance: $(BINARY) $(BATS_CORE) $(BATS_SUPPORT) $(BATS_ASSERT)
+test-acceptance: bats $(BINARY)
 	$(BATS_CORE)/bin/bats test/
 
 $(BINARY): $(GO_SOURCES) go.mod go.sum
@@ -33,7 +33,14 @@ install:
 
 .PHONY: clean
 clean:
-	rm -rf $(BINARY) $(BATS_DIR)
+	rm -rf $(BINARY)
+
+.PHONY: bats
+bats: $(BATS_CORE) $(BATS_SUPPORT) $(BATS_ASSERT)
+
+.PHONY: clean-bats
+clean-bats:
+	rm -rf $(BATS_DIR)
 
 $(BATS_CORE):
 	@echo "Downloading bats-core $(BATS_VERSION)..."
