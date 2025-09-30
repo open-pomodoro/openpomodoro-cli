@@ -34,7 +34,7 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 	d := time.Now().Sub(p.StartTime)
 	fmt.Println(format.DurationAsTime(d))
 
-	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd)); err != nil {
+	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd), 0); err != nil {
 		return err
 	}
 
@@ -54,15 +54,17 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		if err := hook.Run(client, "break", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd)); err != nil {
+		if err := hook.Run(client, "break", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd), breakDuration); err != nil {
 			return err
 		}
 
-		if err := wait(breakDuration); err != nil {
-			return err
+		if shouldWait(cmd, true) {
+			if err := wait(breakDuration); err != nil {
+				return err
+			}
 		}
 
-		return hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd))
+		return hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "finish", getCommandArgs(cmd), 0)
 	}
 
 	return nil

@@ -5,12 +5,13 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"time"
 
 	"github.com/open-pomodoro/go-openpomodoro"
 )
 
 // Run runs a hook with the given name.
-func Run(client *openpomodoro.Client, name string, pomodoroID string, command string, args []string) error {
+func Run(client *openpomodoro.Client, name string, pomodoroID string, command string, args []string, breakDuration time.Duration) error {
 	filename := path.Join(client.Directory, "hooks", name)
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -27,6 +28,14 @@ func Run(client *openpomodoro.Client, name string, pomodoroID string, command st
 		fmt.Sprintf("POMODORO_COMMAND=%s", command),
 		fmt.Sprintf("POMODORO_ARGS=%s", joinArgs(args)),
 	)
+
+	if breakDuration > 0 {
+		cmd.Env = append(cmd.Env,
+			fmt.Sprintf("POMODORO_BREAK_DURATION_MINUTES=%d", int(breakDuration.Minutes())),
+			fmt.Sprintf("POMODORO_BREAK_DURATION_SECONDS=%d", int(breakDuration.Seconds())),
+		)
+	}
+
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Hook %q failed:\n\n", name)
 		return err

@@ -25,6 +25,15 @@ func wait(d time.Duration) error {
 	return err
 }
 
+// shouldWait determines if we should wait based on the wait flag and command context
+// For break commands, wait by default unless --no-wait is explicitly set
+func shouldWait(cmd *cobra.Command, defaultWait bool) bool {
+	if cmd.Flags().Changed("wait") {
+		return waitFlag
+	}
+	return defaultWait
+}
+
 // parseDurationMinutes parses a duration string, defaulting to minutes if no unit is specified
 func parseDurationMinutes(s string) (time.Duration, error) {
 	if _, err := strconv.Atoi(s); err == nil {

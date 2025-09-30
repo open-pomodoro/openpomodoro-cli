@@ -23,7 +23,7 @@ func cancelCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "cancel", getCommandArgs(cmd)); err != nil {
+	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "cancel", getCommandArgs(cmd), 0); err != nil {
 		return err
 	}
 

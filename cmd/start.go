@@ -59,7 +59,7 @@ func startCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "start", current.StartTime.Format(time.RFC3339), "start", getCommandArgs(cmd)); err != nil {
+	if err := hook.Run(client, "start", current.StartTime.Format(time.RFC3339), "start", getCommandArgs(cmd), 0); err != nil {
 		return err
 	}
 

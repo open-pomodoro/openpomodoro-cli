@@ -138,3 +138,31 @@ load test_helper
 
     assert_hook_contains "DESC=My test description"
 }
+
+@test "break hook receives POMODORO_BREAK_DURATION_MINUTES" {
+    create_hook "break" 'echo "MINS=$POMODORO_BREAK_DURATION_MINUTES" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro break 15 --wait=false
+    assert_success
+
+    assert_hook_contains "MINS=15"
+}
+
+@test "break hook receives POMODORO_BREAK_DURATION_SECONDS" {
+    create_hook "break" 'echo "SECS=$POMODORO_BREAK_DURATION_SECONDS" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro break 5 --wait=false
+    assert_success
+
+    assert_hook_contains "SECS=300"
+}
+
+@test "finish --break hook receives break duration" {
+    create_hook "break" 'echo "MINS=$POMODORO_BREAK_DURATION_MINUTES SECS=$POMODORO_BREAK_DURATION_SECONDS" >> "$TEST_DIR/hook_log"'
+
+    pomodoro start "Task" --ago 5m
+    run pomodoro finish --break=10 --wait=false
+    assert_success
+
+    assert_hook_contains "MINS=10 SECS=600"
+}
