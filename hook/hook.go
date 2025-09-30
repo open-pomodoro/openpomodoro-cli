@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/open-pomodoro/go-openpomodoro"
@@ -45,12 +46,5 @@ func Run(client *openpomodoro.Client, name string, pomodoroID string, command st
 }
 
 func joinArgs(args []string) string {
-	result := ""
-	for i, arg := range args {
-		if i > 0 {
-			result += " "
-		}
-		result += arg
-	}
-	return result
+	return strings.Join(args, " ")
 }
