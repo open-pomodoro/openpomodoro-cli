@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const quotingTriggerChars = " \t\n\r\"\\"
+
 func init() {
 	// Parent show command - shows basic info
 	showCmd := &cobra.Command{
@@ -102,8 +104,10 @@ func showBasicCmd(cmd *cobra.Command, args []string) error {
 	fmt.Println("start_time=" + p.StartTime.Format(openpomodoro.TimeFormat))
 
 	if allFlag || p.Description != "" {
-		if strings.ContainsAny(p.Description, " \t\n\r\"\\") {
-			fmt.Println("description=\"" + p.Description + "\"")
+		if strings.ContainsAny(p.Description, quotingTriggerChars) {
+			escaped := strings.ReplaceAll(p.Description, "\\", "\\\\")
+			escaped = strings.ReplaceAll(escaped, "\"", "\\\"")
+			fmt.Println("description=\"" + escaped + "\"")
 		} else {
 			fmt.Println("description=" + p.Description)
 		}
