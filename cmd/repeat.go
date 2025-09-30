@@ -46,7 +46,12 @@ func repeatCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "start"); err != nil {
+	current, err := client.Pomodoro()
+	if err != nil {
+		return err
+	}
+
+	if err := hook.Run(client, "start", current.StartTime.Format(time.RFC3339), "repeat", getCommandArgs(cmd)); err != nil {
 		return err
 	}
 

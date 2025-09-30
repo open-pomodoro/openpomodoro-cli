@@ -3,12 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/justincampbell/go-countdown"
 	"github.com/justincampbell/go-countdown/format"
 	"github.com/open-pomodoro/go-openpomodoro"
+	"github.com/spf13/cobra"
 )
 
 // wait displays a countdown timer for the specified duration
@@ -46,4 +48,16 @@ func printJSON(v interface{}) error {
 func isPomodoroCompleted(p *openpomodoro.Pomodoro) bool {
 	current, _ := client.Pomodoro()
 	return current.IsInactive() || !current.Matches(p)
+}
+
+// getCommandArgs extracts the command-specific arguments from os.Args
+func getCommandArgs(cmd *cobra.Command) []string {
+	for i, arg := range os.Args {
+		if arg == cmd.Name() || (i > 0 && os.Args[i-1] == "pomodoro") {
+			if arg == cmd.Name() {
+				return os.Args[i+1:]
+			}
+		}
+	}
+	return cmd.Flags().Args()
 }

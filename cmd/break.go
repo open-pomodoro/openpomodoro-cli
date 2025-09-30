@@ -26,7 +26,7 @@ func breakCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if err := hook.Run(client, "break"); err != nil {
+	if err := hook.Run(client, "break", "", "break", getCommandArgs(cmd)); err != nil {
 		return err
 	}
 
@@ -34,5 +34,5 @@ func breakCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return hook.Run(client, "stop")
+	return hook.Run(client, "stop", "", "break", getCommandArgs(cmd))
 }

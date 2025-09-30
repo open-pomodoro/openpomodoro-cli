@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +18,12 @@ func init() {
 }
 
 func cancelCmd(cmd *cobra.Command, args []string) error {
-	if err := hook.Run(client, "stop"); err != nil {
+	p, err := client.Pomodoro()
+	if err != nil {
+		return err
+	}
+
+	if err := hook.Run(client, "stop", p.StartTime.Format(time.RFC3339), "cancel", getCommandArgs(cmd)); err != nil {
 		return err
 	}
 

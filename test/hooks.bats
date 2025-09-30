@@ -92,3 +92,49 @@ load test_helper
     assert_hook_contains "START_EXECUTED"
     assert_hook_contains "STOP_EXECUTED"
 }
+
+@test "hook receives POMODORO_ID environment variable" {
+    create_hook "start" 'echo "ID=$POMODORO_ID" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task" --ago 5m
+    assert_success
+
+    run grep -o 'ID=....-..-..T..:..:..-..:..' "$TEST_DIR/hook_log"
+    assert_success
+}
+
+@test "hook receives POMODORO_DIRECTORY environment variable" {
+    create_hook "start" 'echo "DIR=$POMODORO_DIRECTORY" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task"
+    assert_success
+
+    assert_hook_contains "DIR=$TEST_DIR"
+}
+
+@test "hook receives POMODORO_COMMAND environment variable" {
+    create_hook "start" 'echo "CMD=$POMODORO_COMMAND" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task"
+    assert_success
+
+    assert_hook_contains "CMD=start"
+}
+
+@test "hook receives POMODORO_ARGS environment variable" {
+    create_hook "start" 'echo "ARGS=$POMODORO_ARGS" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task" --tags "urgent,work" --duration 30
+    assert_success
+
+    assert_hook_contains 'ARGS=Test task --tags urgent,work --duration 30'
+}
+
+@test "hook can use POMODORO_ID with show command" {
+    create_hook "start" 'desc=$(pomodoro --directory "$POMODORO_DIRECTORY" show description "$POMODORO_ID"); echo "DESC=$desc" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "My test description"
+    assert_success
+
+    assert_hook_contains "DESC=My test description"
+}
