@@ -22,7 +22,12 @@ func cancelCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "stop", p.StartTime.Format(openpomodoro.TimeFormat), "cancel", getCommandArgs(cmd), 0); err != nil {
+	if err := hook.Run(client, hook.Params{
+		Name:       "stop",
+		PomodoroID: p.StartTime.Format(openpomodoro.TimeFormat),
+		Command:    "cancel",
+		Args:       getCommandArgs(cmd),
+	}); err != nil {
 		return err
 	}
 

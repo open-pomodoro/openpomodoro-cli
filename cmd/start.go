@@ -59,7 +59,12 @@ func startCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := hook.Run(client, "start", current.StartTime.Format(openpomodoro.TimeFormat), "start", getCommandArgs(cmd), 0); err != nil {
+	if err := hook.Run(client, hook.Params{
+		Name:       "start",
+		PomodoroID: current.StartTime.Format(openpomodoro.TimeFormat),
+		Command:    "start",
+		Args:       getCommandArgs(cmd),
+	}); err != nil {
 		return err
 	}
 

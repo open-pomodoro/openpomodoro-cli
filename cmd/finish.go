@@ -35,7 +35,12 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 	d := time.Now().Sub(p.StartTime)
 	fmt.Println(format.DurationAsTime(d))
 
-	if err := hook.Run(client, "stop", p.StartTime.Format(openpomodoro.TimeFormat), "finish", getCommandArgs(cmd), 0); err != nil {
+	if err := hook.Run(client, hook.Params{
+		Name:       "stop",
+		PomodoroID: p.StartTime.Format(openpomodoro.TimeFormat),
+		Command:    "finish",
+		Args:       getCommandArgs(cmd),
+	}); err != nil {
 		return err
 	}
 
@@ -55,7 +60,13 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		if err := hook.Run(client, "break", p.StartTime.Format(openpomodoro.TimeFormat), "finish", getCommandArgs(cmd), breakDuration); err != nil {
+		if err := hook.Run(client, hook.Params{
+			Name:          "break",
+			PomodoroID:    p.StartTime.Format(openpomodoro.TimeFormat),
+			Command:       "finish",
+			Args:          getCommandArgs(cmd),
+			BreakDuration: breakDuration,
+		}); err != nil {
 			return err
 		}
 
@@ -65,7 +76,12 @@ func finishCmd(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		return hook.Run(client, "stop", p.StartTime.Format(openpomodoro.TimeFormat), "finish", getCommandArgs(cmd), 0)
+		return hook.Run(client, hook.Params{
+			Name:       "stop",
+			PomodoroID: p.StartTime.Format(openpomodoro.TimeFormat),
+			Command:    "finish",
+			Args:       getCommandArgs(cmd),
+		})
 	}
 
 	return nil
