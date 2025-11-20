@@ -92,3 +92,77 @@ load test_helper
     assert_hook_contains "START_EXECUTED"
     assert_hook_contains "STOP_EXECUTED"
 }
+
+@test "hook receives POMODORO_ID environment variable" {
+    create_hook "start" 'echo "ID=$POMODORO_ID" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task" --ago 5m
+    assert_success
+
+    run grep -E 'ID=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}' "$TEST_DIR/hook_log"
+    assert_success
+}
+
+@test "hook receives POMODORO_DIRECTORY environment variable" {
+    create_hook "start" 'echo "DIR=$POMODORO_DIRECTORY" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task"
+    assert_success
+
+    assert_hook_contains "DIR=$TEST_DIR"
+}
+
+@test "hook receives POMODORO_COMMAND environment variable" {
+    create_hook "start" 'echo "CMD=$POMODORO_COMMAND" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task"
+    assert_success
+
+    assert_hook_contains "CMD=start"
+}
+
+@test "hook receives POMODORO_ARGS environment variable" {
+    create_hook "start" 'echo "ARGS=$POMODORO_ARGS" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "Test task" --tags "urgent,work" --duration 30
+    assert_success
+
+    assert_hook_contains 'ARGS=Test task --tags urgent,work --duration 30'
+}
+
+@test "hook can use POMODORO_ID with show command" {
+    create_hook "start" 'echo "ID_SET=${POMODORO_ID:+yes}" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro start "My test description"
+    assert_success
+
+    assert_hook_contains "ID_SET=yes"
+}
+
+@test "break hook receives POMODORO_BREAK_DURATION_MINUTES" {
+    create_hook "break" 'echo "MINS=$POMODORO_BREAK_DURATION_MINUTES" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro break 15 --wait=false
+    assert_success
+
+    assert_hook_contains "MINS=15"
+}
+
+@test "break hook receives POMODORO_BREAK_DURATION_SECONDS" {
+    create_hook "break" 'echo "SECS=$POMODORO_BREAK_DURATION_SECONDS" >> "$TEST_DIR/hook_log"'
+
+    run pomodoro break 5 --wait=false
+    assert_success
+
+    assert_hook_contains "SECS=300"
+}
+
+@test "finish --break hook receives break duration" {
+    create_hook "break" 'echo "MINS=$POMODORO_BREAK_DURATION_MINUTES SECS=$POMODORO_BREAK_DURATION_SECONDS" >> "$TEST_DIR/hook_log"'
+
+    pomodoro start "Task" --ago 5m
+    run pomodoro finish --break=10 --wait=false
+    assert_success
+
+    assert_hook_contains "MINS=10 SECS=600"
+}
