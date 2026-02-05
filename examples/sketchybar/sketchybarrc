@@ -1,0 +1,9 @@
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+sketchybar --add item pomodoro left \
+           --set pomodoro update_freq=1 icon="󰔟" script="$PLUGIN_DIR/pomodoro.sh" label.padding_right=10 icon.padding_left=10 icon.font.size=22
+
+sketchybar --add bracket pomodoro \
+           --set pomodoro background.color=0xff000000 \
+                          background.height=30 \
+                          background.corner_radius=10
