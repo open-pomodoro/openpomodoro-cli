@@ -24,10 +24,8 @@ func checkCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if s.Pomodoro.IsActive() {
-		return nil
+	if s.Pomodoro.IsDone() {
+		os.Exit(1)
 	}
-
-	os.Exit(1)
 	return nil
 }
