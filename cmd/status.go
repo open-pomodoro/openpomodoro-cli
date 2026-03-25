@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/open-pomodoro/openpomodoro-cli/format"
+	"github.com/open-pomodoro/openpomodoro-cli/hook"
 	"github.com/spf13/cobra"
 )
 
@@ -26,6 +27,7 @@ func statusCmd(cmd *cobra.Command, args []string) error {
 	if waitFlag {
 		if d := s.Pomodoro.Remaining(); d > 0 {
 			wait(d)
+			return hook.Run(client, "stop")
 		}
 	}
 
